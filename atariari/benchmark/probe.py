@@ -252,7 +252,7 @@ class ProbeTrainer():
             return 0
         
         # Assumes all models are trained simultaneously 
-        for k, model_path in self.loaded_model_paths:
+        for k, model_path in self.loaded_model_paths.items():
             if model_path: # if model path is not none
                 int_list = re.findall(r'\d+', txt)
                 if len(int_list)== 0:
