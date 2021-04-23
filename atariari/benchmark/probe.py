@@ -248,11 +248,11 @@ class ProbeTrainer():
                 print("K: {}, Loaded path: {}".format(k, loaded_path))
 
     def get_num_epochs_trained(self):
-        if not loaded_model_paths:
+        if not self.loaded_model_paths:
             return 0
         
         # Assumes all models are trained simultaneously 
-        for k, model_path in loaded_model_paths:
+        for k, model_path in self.loaded_model_paths:
             if model_path: # if model path is not none
                 int_list = re.findall(r'\d+', txt)
                 if len(int_list)== 0:
