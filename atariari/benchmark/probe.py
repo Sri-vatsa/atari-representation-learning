@@ -1,4 +1,7 @@
 import torch
+import glob
+import natsort
+import re
 from torch import nn
 from .utils import EarlyStopping, appendabledict, \
     calculate_multiclass_accuracy, calculate_multiclass_f1_score,\
@@ -58,10 +61,13 @@ class ProbeTrainer():
         self.patience = patience
         self.method = method_name
         self.feature_size = representation_len
-        self.loss_fn = nn.CrossEntropyLoss()
+        self.loss_fn = nn.CrossEntropyLoss() 
 
         # bad convention, but these get set in "create_probes"
         self.probes = self.early_stoppers = self.optimizers = self.schedulers = None
+        
+        # initialized in load checkpoints 
+        self.loaded_model_paths = None
 
     def create_probes(self, sample_label):
         if self.fully_supervised:
@@ -72,6 +78,8 @@ class ProbeTrainer():
         else:
             self.probes = {k: LinearProbe(input_dim=self.feature_size,
                                           num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
+
+            self.load_probe_checkpoints(self.save_dir, to_train=True)
 
         self.early_stoppers = {
             k: EarlyStopping(patience=self.patience, verbose=False, name=k + "_probe", save_dir=self.save_dir)
@@ -185,13 +193,88 @@ class ProbeTrainer():
             f1_score_dict[k] = f1score
 
         return accuracy_dict, f1_score_dict
+    
+    def save_checkpoint(self, name, model, num_epochs=None):
+        '''Saves model'''
+        
+        if num_epochs:
+            filepath = str(self.save_dir) + "/" + str(name) + '_' + str(num_epochs) + ".pt"
+        else:
+            filepath = str(self.save_dir) + "/" + str(name) + '_' + "final" + ".pt"
 
-    def train(self, tr_eps, val_eps, tr_labels, val_labels):
+        torch.save(model.state_dict(), filepath)
+    
+    def load_checkpoint(self, model_path, to_train=True, cls=LinearProbe):
+        '''Loads model'''
+        model = cls(input_dim=self.feature_size, num_classes=self.num_classes)
+        model.load_state_dict(torch.load(model_path))
+
+        if to_train:
+            model.train()
+        else:
+            model.eval()
+        
+        return model
+
+    def save_probe_checkpoints(self, epochs=None):
+        for k, probe in self.probes.items():
+            self.save_checkpoint(k, probe, num_epochs=epochs)
+
+        print("All probe checkpoints saved!")
+
+    def load_probe_checkpoints(self, path, cls=LinearProbe, to_train=False, log=False):
+        
+        all_files = glob.glob(path)
+        self.loaded_model_paths = {}
+
+        for k in self.probes.keys():
+            probe_specifc_files = list(filter(lambda x: k in ''.join(x.split('_')[:-1]), all_files))
+            selected_file = list(filter(lambda x: "final" in ''.join(x.split('_')[:-1]), all_files_mixed))
+            if len(selected_file) == 0:
+                sorted_list = natsort.natsorted(probe_specifc_files)
+                selected_file = [sorted_list[-1]]
+            
+            model_path = selected_file[0] if len(selected_file) > 0 else None
+            loaded_model_paths[k] = model_path
+
+            if model_path:
+                self.probes[k] = self.load_checkpoint(model_path, to_train=to_train, cls=cls)
+        
+        if log:
+            for k, loaded_path in loaded_model_paths.items():
+                print("K: {}, Loaded path: {}".format(k, loaded_path))
+
+    def get_num_epochs_trained(self):
+        if not loaded_model_paths:
+            return 0
+        
+        # Assumes all models are trained simultaneously 
+        for k, model_path in loaded_model_paths:
+            if model_path: # if model path is not none
+                int_list = re.findall(r'\d+', txt)
+                if len(int_list)== 0:
+                    if 'final' in model_path:
+                        return -1  # return special value if model loaded has final tag
+                    else: 
+                        return 0
+                else:
+                    num_epochs = int(int_list[0]) # assumes first number that exists in the model filepath is num epochs
+                return num_epochs
+        
+    def train(self, tr_eps, val_eps, tr_labels, val_labels, save_interval=5):
         # if not self.encoder:
         #     assert len(tr_eps[0][0].squeeze().shape) == 2, "if input is a batch of vectors you must specify an encoder!"
         sample_label = tr_labels[0][0]
         self.create_probes(sample_label)
-        e = 0
+
+        num_epochs_trained = self.get_num_epochs_trained()
+
+        if (self.epochs - num_epochs_trained < 0) or (num_epochs_trained == -1):
+            e = self.epochs
+            print("Probes have already been trained, but are trying to be trained again...")
+        else:
+            e = 0
+
         all_probes_stopped = np.all([early_stopper.early_stop for early_stopper in self.early_stoppers.values()])
         while (not all_probes_stopped) and e < self.epochs:
             epoch_loss, accuracy = self.do_one_epoch(tr_eps, tr_labels)
@@ -207,6 +290,8 @@ class ProbeTrainer():
                 if not self.early_stoppers[k].early_stop:
                     scheduler.step(val_accuracy['val_' + k + '_acc'])
             e += 1
+            if e % save_interval == 0:
+                self.save_probe_checkpoints(epochs=e)
             all_probes_stopped = np.all([early_stopper.early_stop for early_stopper in self.early_stoppers.values()])
         print("All probes early stopped!")
 

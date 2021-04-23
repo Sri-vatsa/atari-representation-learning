@@ -128,7 +128,7 @@ class EarlyStopping(object):
             print(
                 f'Validation accuracy increased for {self.name}  ({self.val_acc_max:.6f} --> {val_acc:.6f}).  Saving model ...')
 
-        torch.save(model.state_dict(), str(self.save_dir) + "/" + self.name + ".pt")
+        torch.save(model.state_dict(), str(self.save_dir) + "/" + self.name + '_' + "final" + ".pt")
 
 
 def calculate_accuracy(preds, y):
