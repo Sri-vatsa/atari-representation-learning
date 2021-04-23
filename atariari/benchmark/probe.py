@@ -248,7 +248,7 @@ class ProbeTrainer():
                 print("K: {}, Loaded path: {}".format(k, loaded_path))
 
     def get_num_epochs_trained(self):
-        if not self.loaded_model_paths:
+        if not self.loaded_model_paths or len(self.loaded_model_paths.keys()) == 0:
             return 0
         
         # Assumes all models are trained simultaneously 
@@ -262,7 +262,8 @@ class ProbeTrainer():
                         return 0
                 else:
                     num_epochs = int(int_list[0]) # assumes first number that exists in the model filepath is num epochs
-                return num_epochs
+                return num_epochs    
+
         
     def train(self, tr_eps, val_eps, tr_labels, val_labels, save_interval=5):
         # if not self.encoder:
