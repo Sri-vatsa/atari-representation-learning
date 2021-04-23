@@ -229,7 +229,7 @@ class ProbeTrainer():
 
         for k in self.probes.keys():
             probe_specifc_files = list(filter(lambda x: k in ''.join(x.split('_')[:-1]), all_files))
-            selected_file = list(filter(lambda x: "final" in ''.join(x.split('_')[:-1]), all_files_mixed))
+            selected_file = list(filter(lambda x: "final" in ''.join(x.split('_')[:-1]), all_files))
             if len(selected_file) == 0:
                 sorted_list = natsort.natsorted(probe_specifc_files)
                 selected_file = [sorted_list[-1]]
