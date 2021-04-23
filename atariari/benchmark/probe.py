@@ -262,7 +262,9 @@ class ProbeTrainer():
                         return 0
                 else:
                     num_epochs = int(int_list[0]) # assumes first number that exists in the model filepath is num epochs
-                return num_epochs    
+                return num_epochs
+
+        return 0    
 
         
     def train(self, tr_eps, val_eps, tr_labels, val_labels, save_interval=5):
