@@ -238,7 +238,7 @@ class ProbeTrainer():
                     selected_file = []
             
             model_path = selected_file[0] if len(selected_file) > 0 else None
-            loaded_model_paths[k] = model_path
+            self.loaded_model_paths[k] = model_path
 
             if model_path:
                 self.probes[k] = self.load_checkpoint(model_path, to_train=to_train, cls=cls)
