@@ -232,7 +232,10 @@ class ProbeTrainer():
             selected_file = list(filter(lambda x: "final" in ''.join(x.split('_')[:-1]), all_files))
             if len(selected_file) == 0:
                 sorted_list = natsort.natsorted(probe_specifc_files)
-                selected_file = [sorted_list[-1]]
+                if len(probe_specifc_files) > 0:
+                    selected_file = [sorted_list[-1]]
+                else:
+                    selected_file = []
             
             model_path = selected_file[0] if len(selected_file) > 0 else None
             loaded_model_paths[k] = model_path
@@ -279,6 +282,7 @@ class ProbeTrainer():
         while (not all_probes_stopped) and e < self.epochs:
             epoch_loss, accuracy = self.do_one_epoch(tr_eps, tr_labels)
             self.log_results(e, epoch_loss, accuracy)
+            self.log_wandb_results(e, epoch_loss, accuracy)
 
             val_loss, val_accuracy = self.evaluate(val_eps, val_labels, epoch=e)
             # update all early stoppers
@@ -323,14 +327,24 @@ class ProbeTrainer():
               """)
         self.log_results("Test", acc_dict, f1_dict)
         return acc_dict, f1_dict
-
+    
     def log_results(self, epoch_idx, *dictionaries):
         print("Epoch: {}".format(epoch_idx))
         for dictionary in dictionaries:
             for k, v in dictionary.items():
                 print("\t {}: {:8.4f}".format(k, v))
             print("\t --")
-
+    
+    def log_wandb_results(self, epoch_idx, *dictionaries):
+        # print("dictionaries", dictionaries)
+        for dictionary in dictionaries:
+            dict = dictionary[0]
+            # print("dict type", type(dict))
+            # print("dictionary", dict)
+            # print("dict type", type(dictionary[1]))
+            # print("dictionary", dictionary[1])
+            wandb.log(dict, step=epoch_idx)
+            wandb.log(dictionary[1], step=epoch_idx)
 
 def postprocess_raw_metrics(acc_dict, f1_dict):
     acc_overall_avg, f1_overall_avg = compute_dict_average(acc_dict), \
