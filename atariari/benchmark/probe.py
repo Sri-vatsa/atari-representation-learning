@@ -285,7 +285,6 @@ class ProbeTrainer():
         while (not all_probes_stopped) and e < self.epochs:
             epoch_loss, accuracy = self.do_one_epoch(tr_eps, tr_labels)
             self.log_results(e, epoch_loss, accuracy)
-            self.log_wandb_results(e, epoch_loss, accuracy)
 
             val_loss, val_accuracy = self.evaluate(val_eps, val_labels, epoch=e)
             # update all early stoppers
@@ -333,19 +332,15 @@ class ProbeTrainer():
     
     def log_results(self, epoch_idx, *dictionaries):
         print("Epoch: {}".format(epoch_idx))
+        self.log_wandb_results(epoch_idx, dictionaries)
         for dictionary in dictionaries:
             for k, v in dictionary.items():
                 print("\t {}: {:8.4f}".format(k, v))
             print("\t --")
     
     def log_wandb_results(self, epoch_idx, *dictionaries):
-        # print("dictionaries", dictionaries)
         for dictionary in dictionaries:
             dict = dictionary[0]
-            # print("dict type", type(dict))
-            # print("dictionary", dict)
-            # print("dict type", type(dictionary[1]))
-            # print("dictionary", dictionary[1])
             wandb.log(dict, step=epoch_idx)
             wandb.log(dictionary[1], step=epoch_idx)
 
