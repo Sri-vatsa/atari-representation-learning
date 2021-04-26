@@ -340,6 +340,7 @@ class ProbeTrainer():
             print("\t --")
     
     def log_wandb_results(self, epoch_idx, *dictionaries):
+        epoch_idx = int(epoch_idx)
         for dictionary in dictionaries:
             dict = dictionary[0]
             self.wandb.log(dict, step=epoch_idx)
