@@ -2,6 +2,7 @@ import torch
 import glob
 import natsort
 import re
+import os
 from torch import nn
 from .utils import EarlyStopping, appendabledict, \
     calculate_multiclass_accuracy, calculate_multiclass_f1_score,\
@@ -223,7 +224,7 @@ class ProbeTrainer():
         print("All probe checkpoints saved!")
 
     def load_probe_checkpoints(self, path, cls=LinearProbe, to_train=False, log=False):
-        
+        path = os.path.join(path, "*") # get all files in folder
         all_files = glob.glob(path)
         self.loaded_model_paths = {}
 
