@@ -340,11 +340,17 @@ class ProbeTrainer():
             print("\t --")
     
     def log_wandb_results(self, epoch_idx, *dictionaries):
-        epoch_idx = int(epoch_idx)
-        for dictionary in dictionaries:
-            dict = dictionary[0]
-            self.wandb.log(dict, step=epoch_idx)
-            self.wandb.log(dictionary[1], step=epoch_idx)
+
+        if type(epoch_idx) == str:
+            for dictionary in dictionaries:
+                dict = dictionary[0]
+                self.wandb.log(dict)
+                self.wandb.log(dictionary[1])
+        else:
+            for dictionary in dictionaries:
+                dict = dictionary[0]
+                self.wandb.log(dict, step=epoch_idx)
+                self.wandb.log(dictionary[1], step=epoch_idx)
 
 def postprocess_raw_metrics(acc_dict, f1_dict):
     acc_overall_avg, f1_overall_avg = compute_dict_average(acc_dict), \
