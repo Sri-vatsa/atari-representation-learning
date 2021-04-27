@@ -261,6 +261,7 @@ class ProbeTrainer():
         for k, model_path in self.loaded_model_paths.items():
             if model_path: # if model path is not none
                 int_list = re.findall(r'\d+', model_path)
+                print("model_path: {}".format(model_path))
                 print("ints in model file path: {}".format(int_list))
                 if len(int_list)== 0:
                     if 'final' in model_path:
