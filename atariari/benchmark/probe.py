@@ -278,7 +278,7 @@ class ProbeTrainer():
                 else:
                     num_epochs = int(int_list[0]) # assumes first number that exists in the model filepath is num epochs
                     print("selected num_epochs: {}".format(num_epochs))
-                return num_epochs
+                return num_epochs + 1
         print("returned 0 epochs trained 2")
         return 0    
 
