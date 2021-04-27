@@ -133,7 +133,7 @@ class ProbeTrainer():
             preds = probe(f)
         return preds
 
-    def do_one_epoch(self, episodes, label_dicts, data_generator_func=None):
+    def do_one_epoch(self, episodes, label_dicts, batched_emb=None, batched_labels=None):
         sample_label = label_dicts[0][0]
         epoch_loss, accuracy = {k + "_loss": [] for k in sample_label.keys() if
                                 not self.early_stoppers[k].early_stop}, \
@@ -141,7 +141,7 @@ class ProbeTrainer():
                                 not self.early_stoppers[k].early_stop}
 
         if data_generator_func:
-            data_generator = data_generator_func(episodes, label_dicts)
+            data_generator = iter(zip(batched_emb, batched_labels))
         else:
             data_generator = self.generate_batch(episodes, label_dicts)
 
@@ -172,7 +172,7 @@ class ProbeTrainer():
 
         return epoch_loss, accuracy
 
-    def do_test_epoch(self, episodes, label_dicts, data_generator_func=None):
+    def do_test_epoch(self, episodes, label_dicts, batched_emb=None, batched_labels=None):
         sample_label = label_dicts[0][0]
         accuracy_dict, f1_score_dict = {}, {}
         pred_dict, all_label_dict = {k: [] for k in sample_label.keys()}, \
@@ -180,7 +180,7 @@ class ProbeTrainer():
 
         # collect all predictions first
         if data_generator_func:
-            data_generator = data_generator_func(episodes, label_dicts)
+            data_generator = iter(zip(batched_emb, batched_labels))
         else:
             data_generator = self.generate_batch(episodes, label_dicts)
 
@@ -287,7 +287,7 @@ class ProbeTrainer():
         return 0    
 
         
-    def train(self, tr_eps, val_eps, tr_labels, val_labels, save_interval=5, data_generator_func=None):
+    def train(self, tr_eps, val_eps, tr_labels, val_labels, save_interval=5, batched_tr_emb=None, batched_val_emb=None, batched_tr_labels=None, batched_val_labels=None):
         # if not self.encoder:
         #     assert len(tr_eps[0][0].squeeze().shape) == 2, "if input is a batch of vectors you must specify an encoder!"
         sample_label = tr_labels[0][0]
@@ -306,10 +306,10 @@ class ProbeTrainer():
 
         all_probes_stopped = np.all([early_stopper.early_stop for early_stopper in self.early_stoppers.values()])
         while (not all_probes_stopped) and e < self.epochs:
-            epoch_loss, accuracy = self.do_one_epoch(tr_eps, tr_labels, data_generator_func=data_generator_func)
+            epoch_loss, accuracy = self.do_one_epoch(tr_eps, tr_labels, batched_emb=batched_tr_emb, batched_labels=batched_tr_labels)
             self.log_results(e, epoch_loss, accuracy)
 
-            val_loss, val_accuracy = self.evaluate(val_eps, val_labels, epoch=e)
+            val_loss, val_accuracy = self.evaluate(val_eps, val_labels, epoch=e, batched_emb=batched_val_emb, batched_labels=batched_val_labels)
             # update all early stoppers
             for k in sample_label.keys():
                 if not self.early_stoppers[k].early_stop:
@@ -324,10 +324,10 @@ class ProbeTrainer():
             all_probes_stopped = np.all([early_stopper.early_stop for early_stopper in self.early_stoppers.values()])
         print("All probes early stopped!")
 
-    def evaluate(self, val_episodes, val_label_dicts, epoch=None):
+    def evaluate(self, val_episodes, val_label_dicts, epoch=None, batched_val_emb=None, batched_val_labels=None):
         for k, probe in self.probes.items():
             probe.eval()
-        epoch_loss, accuracy = self.do_one_epoch(val_episodes, val_label_dicts)
+        epoch_loss, accuracy = self.do_one_epoch(val_episodes, val_label_dicts, batched_emb=batched_val_emb, batched_labels=batched_val_labels)
         epoch_loss = {"val_" + k: v for k, v in epoch_loss.items()}
         accuracy = {"val_" + k: v for k, v in accuracy.items()}
         self.log_results(epoch, epoch_loss, accuracy)
@@ -335,12 +335,12 @@ class ProbeTrainer():
             probe.train()
         return epoch_loss, accuracy
 
-    def test(self, test_episodes, test_label_dicts, epoch=None, data_generator_func=None):
+    def test(self, test_episodes, test_label_dicts, epoch=None, batched_emb=None, batched_labels=None):
         for k in self.early_stoppers.keys():
             self.early_stoppers[k].early_stop = False
         for k, probe in self.probes.items():
             probe.eval()
-        acc_dict, f1_dict = self.do_test_epoch(test_episodes, test_label_dicts, data_generator_func=data_generator_func)
+        acc_dict, f1_dict = self.do_test_epoch(test_episodes, test_label_dicts, batched_emb=batched_emb, batched_labels=batched_labels)
 
         acc_dict, f1_dict = postprocess_raw_metrics(acc_dict, f1_dict)
 
