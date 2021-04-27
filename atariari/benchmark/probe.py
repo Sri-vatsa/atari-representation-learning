@@ -212,7 +212,11 @@ class ProbeTrainer():
     def load_checkpoint(self, model_path, to_train=True, cls=LinearProbe):
         '''Loads model'''
         model = cls(input_dim=self.feature_size, num_classes=self.num_classes)
-        model.load_state_dict(torch.load(model_path))
+
+        if torch.cuda.is_available():
+            model.load_state_dict(torch.load(model_path), map_location=torch.device("gpu"))
+        else:
+            model.load_state_dict(torch.load(model_path), map_location=torch.device("cpu"))
 
         if to_train:
             model.train()
@@ -273,7 +277,7 @@ class ProbeTrainer():
                         return 0
                 else:
                     num_epochs = int(int_list[0]) # assumes first number that exists in the model filepath is num epochs
-                    print("selected num_epochs")
+                    print("selected num_epochs: {}".format(num_epochs))
                 return num_epochs
         print("returned 0 epochs trained 2")
         return 0    
