@@ -261,11 +261,11 @@ class ProbeTrainer():
         for k, model_path in self.loaded_model_paths.items():
             if model_path: # if model path is not none
                 file_name = model_path.split("/")[-1] # ignore rest og filepath
-                int_list = re.findall(r'\d+', model_path)
+                int_list = re.findall(r'\d+', file_name)
                 #print("model_path: {}".format(model_path))
                 #print("ints in model file path: {}".format(int_list))
                 if len(int_list)== 0:
-                    if 'final' in model_path:
+                    if 'final' in file_name:
                         print("final found in model path name")
                         return -1  # return special value if model loaded has final tag
                     else: 
