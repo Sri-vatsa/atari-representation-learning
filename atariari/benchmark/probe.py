@@ -179,7 +179,7 @@ class ProbeTrainer():
         # collect all predictions first
         if not data_generator:
             data_generator = self.generate_batch(episodes, label_dicts)
-            
+
         for step, (x, labels_batch) in enumerate(data_generator):
             for k, label in labels_batch.items():
                 label = torch.tensor(label).long().cpu()
@@ -281,6 +281,7 @@ class ProbeTrainer():
         num_epochs_trained = self.get_num_epochs_trained()
 
         if (self.epochs - num_epochs_trained < 0) or (num_epochs_trained == -1):
+            print("Alread trained to {} epochs.".format(num_epochs_trained))
             e = self.epochs
             print("Probes have already been trained, but are trying to be trained again...")
         else:
