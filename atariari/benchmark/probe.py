@@ -214,7 +214,7 @@ class ProbeTrainer():
         model = cls(input_dim=self.feature_size, num_classes=self.num_classes)
 
         if torch.cuda.is_available():
-            model.load_state_dict(torch.load(model_path), map_location=torch.device("gpu"))
+            model.load_state_dict(torch.load(model_path), map_location=torch.device("cuda"))
         else:
             model.load_state_dict(torch.load(model_path), map_location=torch.device("cpu"))
 
