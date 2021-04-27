@@ -280,7 +280,7 @@ class ProbeTrainer():
 
         num_epochs_trained = self.get_num_epochs_trained()
 
-        if (self.epochs - num_epochs_trained < 0) or (num_epochs_trained == -1):
+        if ((self.epochs - num_epochs_trained) < 0) or (num_epochs_trained == -1):
             print("Alread trained to {} epochs.".format(num_epochs_trained))
             e = self.epochs
             print("Probes have already been trained, but are trying to be trained again...")
