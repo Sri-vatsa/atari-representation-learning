@@ -140,7 +140,7 @@ class ProbeTrainer():
                                {k + "_acc": [] for k in sample_label.keys() if
                                 not self.early_stoppers[k].early_stop}
 
-        if batched_emb:
+        if batched_emb is not None:
             data_generator = iter(zip(batched_emb, batched_labels))
         else:
             data_generator = self.generate_batch(episodes, label_dicts)
@@ -179,7 +179,7 @@ class ProbeTrainer():
                                     {k: [] for k in sample_label.keys()}
 
         # collect all predictions first
-        if batched_emb:
+        if batched_emb is not None:
             data_generator = iter(zip(batched_emb, batched_labels))
         else:
             data_generator = self.generate_batch(episodes, label_dicts)
