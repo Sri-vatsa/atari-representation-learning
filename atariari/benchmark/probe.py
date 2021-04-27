@@ -324,7 +324,7 @@ class ProbeTrainer():
             all_probes_stopped = np.all([early_stopper.early_stop for early_stopper in self.early_stoppers.values()])
         print("All probes early stopped!")
 
-    def evaluate(self, val_episodes, val_label_dicts, epoch=None, batched_val_emb=None, batched_val_labels=None):
+    def evaluate(self, val_episodes, val_label_dicts, epoch=None, batched_emb=None, batched_labels=None):
         for k, probe in self.probes.items():
             probe.eval()
         epoch_loss, accuracy = self.do_one_epoch(val_episodes, val_label_dicts, batched_emb=batched_val_emb, batched_labels=batched_val_labels)
