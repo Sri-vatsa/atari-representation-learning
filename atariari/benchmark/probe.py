@@ -327,7 +327,7 @@ class ProbeTrainer():
     def evaluate(self, val_episodes, val_label_dicts, epoch=None, batched_emb=None, batched_labels=None):
         for k, probe in self.probes.items():
             probe.eval()
-        epoch_loss, accuracy = self.do_one_epoch(val_episodes, val_label_dicts, batched_emb=batched_val_emb, batched_labels=batched_val_labels)
+        epoch_loss, accuracy = self.do_one_epoch(val_episodes, val_label_dicts, batched_emb=batched_emb, batched_labels=batched_labels)
         epoch_loss = {"val_" + k: v for k, v in epoch_loss.items()}
         accuracy = {"val_" + k: v for k, v in accuracy.items()}
         self.log_results(epoch, epoch_loss, accuracy)
