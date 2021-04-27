@@ -254,21 +254,26 @@ class ProbeTrainer():
 
     def get_num_epochs_trained(self):
         if not self.loaded_model_paths or len(self.loaded_model_paths.keys()) == 0:
+            print("returned 0 epochs trained 1")
             return 0
         
         # Assumes all models are trained simultaneously 
         for k, model_path in self.loaded_model_paths.items():
             if model_path: # if model path is not none
                 int_list = re.findall(r'\d+', model_path)
+                print("ints in model file path: {}".format(int_list))
                 if len(int_list)== 0:
                     if 'final' in model_path:
+                        print("final found in model path name")
                         return -1  # return special value if model loaded has final tag
                     else: 
+                        print("no model path found. Hence to prior training")
                         return 0
                 else:
                     num_epochs = int(int_list[0]) # assumes first number that exists in the model filepath is num epochs
+                    print("selected num_epochs")
                 return num_epochs
-
+        print("returned 0 epochs trained 2")
         return 0    
 
         
