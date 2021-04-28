@@ -22,6 +22,15 @@ class LinearProbe(nn.Module):
     def forward(self, feature_vectors):
         return self.model(feature_vectors)
 
+class LstmProbe(nn.Module):
+    # TODO Complete implementation
+    def __init__(self, input_dim, num_classes=255):
+        super().__init__()
+        #self.model = nn.Linear(in_features=input_dim, out_features=num_classes)
+
+    def forward(self, feature_vectors):
+        return self.model(feature_vectors)
+
 
 class FullySupervisedLinearProbe(nn.Module):
     def __init__(self, encoder, num_classes=255):
@@ -39,6 +48,7 @@ class ProbeTrainer():
     def __init__(self,
                  encoder=None,
                  method_name="my_method",
+                 probe_type="linear",
                  wandb=None,
                  patience=15,
                  num_classes=256,
@@ -63,6 +73,12 @@ class ProbeTrainer():
         self.method = method_name
         self.feature_size = representation_len
         self.loss_fn = nn.CrossEntropyLoss() 
+        self.valid_probe_types = set(['linear', 'lstm'])
+
+        if not self.is_probe_type_valid(probe_type):
+            raise Exception("Invalid probe type. Pick amongst ")
+
+        self.probe_type = probe_type
 
         # bad convention, but these get set in "create_probes"
         self.probes = self.early_stoppers = self.optimizers = self.schedulers = None
@@ -70,14 +86,25 @@ class ProbeTrainer():
         # initialized in load checkpoints 
         self.loaded_model_paths = None
 
+    def is_probe_type_valid(self, probe_type, ):
+        if probe_type in self.valid_probe_types:
+            return True
+        else:
+            return False
+
     def create_probes(self, sample_label):
         if self.fully_supervised:
             assert self.encoder != None, "for fully supervised you must provide an encoder!"
             self.probes = {k: FullySupervisedLinearProbe(encoder=self.encoder,
                                                          num_classes=self.num_classes).to(self.device) for k in
                            sample_label.keys()}
-        else:
+        elif self.probe_type=='linear':
             self.probes = {k: LinearProbe(input_dim=self.feature_size,
+                                          num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
+
+            self.load_probe_checkpoints(self.save_dir, to_train=True)
+        elif self.probe_type=='lstm':
+            self.probes = {k: LstmProbe(input_dim=self.feature_size,
                                           num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
 
             self.load_probe_checkpoints(self.save_dir, to_train=True)
