@@ -1,7 +1,7 @@
 from .probe import ProbeTrainer
 
 # train using embeddings
-def train_embeddings(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, 
+def train_embeddings(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, batch_size, 
                  tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels, 
                  tr_eps_tensors, val_eps_tensors, tr_lbls, val_lbls, test_eps_tensors, test_lbls
                  ):
@@ -23,7 +23,7 @@ def train_embeddings(encoder, probe_type, num_epochs, lr, patience, wandb, save_
     wandb.log(final_f1_scores)
 
 # train using images
-def train_images(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, 
+def train_images(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, batch_size,
                  tr_episodes, val_episodes, tr_labels, val_labels, 
                  test_episodes, test_labels):
   
@@ -45,16 +45,16 @@ def train_images(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir,
     wandb.log(final_f1_scores)
 
 # main training method
-def run_training(training_input, encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, 
+def run_training(training_input, encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, batch_size, 
                  tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels, 
                  tr_eps_tensors, val_eps_tensors, tr_lbls, val_lbls, test_eps_tensors, test_lbls):
   
   if training_input == 'embeddings':
-    train_embeddings(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, 
+    train_embeddings(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, batch_size,
                  tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels, 
                  tr_eps_tensors, val_eps_tensors, tr_lbls, val_lbls, test_eps_tensors, test_lbls)
   elif training_input == 'images':
-    train_images(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, 
+    train_images(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, batch_size,
                  tr_episodes, val_episodes, tr_labels, val_labels, 
                  test_episodes, test_labels)
   else:
