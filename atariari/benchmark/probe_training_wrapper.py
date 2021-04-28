@@ -12,7 +12,7 @@ def train_embeddings(encoder, probe_type, num_epochs, lr, patience, wandb, save_
                           patience=patience,
                           wandb=wandb,
                           fully_supervised=False,
-                          save_dir=models_dir,
+                          save_dir=save_dir,
                           representation_len=encoder.feature_size)
     probe_trainer.train(tr_episodes, val_episodes,
                       tr_labels, val_labels, batched_tr_emb=tr_eps_tensors, batched_val_emb=val_eps_tensors, batched_tr_labels=tr_lbls, batched_val_labels=val_lbls)
@@ -34,7 +34,7 @@ def train_images(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir,
                           patience=patience,
                           wandb=wandb,
                           fully_supervised=False,
-                          save_dir=models_dir,
+                          save_dir=save_dir,
                           representation_len=encoder.feature_size)
     probe_trainer.train(tr_episodes, val_episodes,
                       tr_labels, val_labels)
