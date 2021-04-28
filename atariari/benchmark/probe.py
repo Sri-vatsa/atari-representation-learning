@@ -23,7 +23,7 @@ class LinearProbe(nn.Module):
         return self.model(feature_vectors)
 
 class LstmProbe(nn.Module):
-    def __init__(self, input_dim, n_layers=1, n_hidden=300, num_classes=255):
+    def __init__(self, input_dim, n_layers=2, n_hidden=300, num_classes=255):
         super().__init__()
         self.lstm = nn.LSTM(input_dim, n_hidden, n_layers, batch_first=True)
         self.linear = nn.Linear(n_hidden, num_classes)
