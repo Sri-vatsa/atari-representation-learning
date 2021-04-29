@@ -22,6 +22,27 @@ class LinearProbe(nn.Module):
     def forward(self, feature_vectors):
         return self.model(feature_vectors)
 
+class NonLinearProbe1(nn.Module):
+    def __init__(self, input_dim, num_classes=255):
+        super().__init__()
+        self.linear = nn.Linear(in_features=input_dim, out_features=num_classes)
+        self.relu = nn.ReLU()
+
+    def forward(self, feature_vectors):
+        return self.relu(self.linear(feature_vectors))
+
+class NonLinearProbe2(nn.Module):
+    def __init__(self, input_dim, num_hidden=300, num_classes=255):
+        super().__init__()
+        self.linear1 = nn.Linear(in_features=input_dim, out_features=num_hidden)
+        self.relu = nn.ReLU()
+        self.linear2 = nn.Linear(in_features=num_hidden, out_features=num_classes)
+
+    def forward(self, feature_vectors):
+        x = self.linear1(feature_vectors)
+        x = self.relu(x)
+        return self.linear2(x)
+
 class LstmProbe(nn.Module):
     def __init__(self, input_dim, n_layers=2, n_hidden=300, num_classes=255):
         super().__init__()
@@ -74,7 +95,7 @@ class ProbeTrainer():
         self.method = method_name
         self.feature_size = representation_len
         self.loss_fn = nn.CrossEntropyLoss() 
-        self.valid_probe_types = set(['linear', 'lstm'])
+        self.valid_probe_types = set(['linear', 'lstm', 'non-linear-1', 'non-linear-2'])
 
         if not self.is_probe_type_valid(probe_type):
             raise Exception("Invalid probe type. Pick amongst ")
@@ -92,9 +113,9 @@ class ProbeTrainer():
             return True
         else:
             return False
-
-    def create_probes(self, sample_label):
-        if self.fully_supervised:
+    
+    def _init_probes(self, sample_label):
+         if self.fully_supervised:
             assert self.encoder != None, "for fully supervised you must provide an encoder!"
             self.probes = {k: FullySupervisedLinearProbe(encoder=self.encoder,
                                                          num_classes=self.num_classes).to(self.device) for k in
@@ -109,6 +130,22 @@ class ProbeTrainer():
                                           num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
 
             self.load_probe_checkpoints(self.save_dir, to_train=True)
+        elif self.probe_type=='non-linear-1':
+            self.probes = {k: NonLinearProbe1(input_dim=self.feature_size,
+                                          num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
+
+            self.load_probe_checkpoints(self.save_dir, to_train=True)
+        
+        elif self.probe_type=='non-linear-2':
+            self.probes = {k: NonLinearProbe2(input_dim=self.feature_size,
+                                          num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
+
+            self.load_probe_checkpoints(self.save_dir, to_train=True)
+
+
+    def create_probes(self, sample_label):
+       
+       self._init_probes(sample_label)
 
         self.early_stoppers = {
             k: EarlyStopping(patience=self.patience, verbose=False, name=k + "_probe", save_dir=self.save_dir)
