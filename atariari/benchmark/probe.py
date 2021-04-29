@@ -43,6 +43,15 @@ class NonLinearProbe2(nn.Module):
         x = self.relu(x)
         return self.linear2(x)
 
+class NonLinearProbe3(nn.Module):
+    def __init__(self, input_dim, num_classes=255):
+        super().__init__()
+        self.linear = nn.Linear(in_features=input_dim, out_features=num_classes)
+        self.sigmoid = nn.Sigmoid()
+
+    def forward(self, feature_vectors):
+        return self.sigmoid(self.linear(feature_vectors))
+
 class LstmProbe(nn.Module):
     def __init__(self, input_dim, n_layers=2, n_hidden=300, num_classes=255):
         super().__init__()
@@ -95,7 +104,7 @@ class ProbeTrainer():
         self.method = method_name
         self.feature_size = representation_len
         self.loss_fn = nn.CrossEntropyLoss() 
-        self.valid_probe_types = set(['linear', 'lstm', 'non-linear-1', 'non-linear-2'])
+        self.valid_probe_types = set(['linear', 'lstm', 'non-linear-1', 'non-linear-2', 'non-linear-3'])
 
         if not self.is_probe_type_valid(probe_type):
             raise Exception("Invalid probe type. Pick amongst ")
@@ -140,6 +149,12 @@ class ProbeTrainer():
         
         elif self.probe_type=='non-linear-2':
             self.probes = {k: NonLinearProbe2(input_dim=self.feature_size,
+                                          num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
+
+            self.load_probe_checkpoints(self.save_dir, to_train=True)
+
+        elif self.probe_type=='non-linear-3':
+            self.probes = {k: NonLinearProbe3(input_dim=self.feature_size,
                                           num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
 
             self.load_probe_checkpoints(self.save_dir, to_train=True)
