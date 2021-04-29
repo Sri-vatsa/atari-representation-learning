@@ -115,11 +115,13 @@ class ProbeTrainer():
             return False
     
     def _init_probes(self, sample_label):
-         if self.fully_supervised:
+        
+        if self.fully_supervised:
             assert self.encoder != None, "for fully supervised you must provide an encoder!"
             self.probes = {k: FullySupervisedLinearProbe(encoder=self.encoder,
                                                          num_classes=self.num_classes).to(self.device) for k in
                            sample_label.keys()}
+
         elif self.probe_type=='linear':
             self.probes = {k: LinearProbe(input_dim=self.feature_size,
                                           num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
@@ -145,7 +147,7 @@ class ProbeTrainer():
 
     def create_probes(self, sample_label):
        
-       self._init_probes(sample_label)
+        self._init_probes(sample_label)
 
         self.early_stoppers = {
             k: EarlyStopping(patience=self.patience, verbose=False, name=k + "_probe", save_dir=self.save_dir)
