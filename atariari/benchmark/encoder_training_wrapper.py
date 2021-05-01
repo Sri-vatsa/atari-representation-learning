@@ -2,7 +2,7 @@ import torch
 
 from atari_rl.atariari.methods.global_infonce_stdim import GlobalInfoNCESpatioTemporalTrainer
 
-def train_encoder(encoder, tr_eps, val_eps, num_epochs, lr, patience, wandb, save_dir, batch_size, model_name, method="global-infonce-stdim"):
+def run_encoder_training(encoder, tr_eps, val_eps, num_epochs, lr, patience, wandb, save_dir, batch_size, model_name, method="global-infonce-stdim"):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     observation_shape = tr_eps[0][0].shape
     config = {}
