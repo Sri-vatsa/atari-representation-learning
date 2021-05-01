@@ -17,6 +17,8 @@ def train_encoder(encoder, tr_eps, val_eps, num_epochs, lr, patience, wandb, sav
     # Add different training methods here
     if method == "global-infonce-stdim":
         trainer = GlobalInfoNCESpatioTemporalTrainer(encoder, config, device=device, wandb=wandb)
+    else:
+        raise Exception("Invalid method...please pick a valid encoder training method")
 
     # Implement save model
     trainer.train(tr_eps, val_eps)

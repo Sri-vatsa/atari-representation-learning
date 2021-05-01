@@ -112,8 +112,9 @@ class GlobalInfoNCESpatioTemporalTrainer(Trainer):
 
         torch.save(model.state_dict(), filepath)
     
-    def load_checkpoints(self, path, cls=LinearProbe, to_train=False, log=False):
+    def load_checkpoints(self, path, cls=None, to_train=False, log=False):
         # TODO: implement load checkpoints for right encoder model 
+        '''
         path = os.path.join(path, "*") # get all files in folder
         all_files = glob.glob(path)
         self.loaded_model_paths = {}
@@ -137,6 +138,7 @@ class GlobalInfoNCESpatioTemporalTrainer(Trainer):
         if log:
             for k, loaded_path in loaded_model_paths.items():
                 print("K: {}, Loaded path: {}".format(k, loaded_path))
+        '''
 
     def train(self, tr_eps, val_eps, save_interval=5):
         # TODO: Make it work for all modes, right now only it defaults to pcl.
