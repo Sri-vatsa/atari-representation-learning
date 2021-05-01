@@ -216,17 +216,18 @@ class ProbeTrainer():
         return preds
 
     def do_one_epoch(self, episodes, label_dicts, batched_emb=None, batched_labels=None):
+        # TODO: remove batched_emb, batched_labels
         sample_label = label_dicts[0][0]
         epoch_loss, accuracy = {k + "_loss": [] for k in sample_label.keys() if
                                 not self.early_stoppers[k].early_stop}, \
                                {k + "_acc": [] for k in sample_label.keys() if
                                 not self.early_stoppers[k].early_stop}
 
-        if batched_emb is not None:
-            data_generator = iter(zip(batched_emb, batched_labels))
-        else:
-            data_generator = self.generate_batch(episodes, label_dicts)
-
+        #if batched_emb is not None:
+        #    data_generator = iter(zip(batched_emb, batched_labels))
+        #else:
+        #    data_generator = self.generate_batch(episodes, label_dicts)
+        data_generator = self.generate_batch(episodes, label_dicts)
         for step, (x, labels_batch) in enumerate(data_generator):
             for k, label in labels_batch.items():
                 if self.early_stoppers[k].early_stop:
@@ -255,17 +256,19 @@ class ProbeTrainer():
         return epoch_loss, accuracy
 
     def do_test_epoch(self, episodes, label_dicts, batched_emb=None, batched_labels=None):
+        # TODO: remove batched_emb, batched_labels
         sample_label = label_dicts[0][0]
         accuracy_dict, f1_score_dict = {}, {}
         pred_dict, all_label_dict = {k: [] for k in sample_label.keys()}, \
                                     {k: [] for k in sample_label.keys()}
 
         # collect all predictions first
-        if batched_emb is not None:
-            data_generator = iter(zip(batched_emb, batched_labels))
-        else:
-            data_generator = self.generate_batch(episodes, label_dicts)
+        #if batched_emb is not None:
+        #    data_generator = iter(zip(batched_emb, batched_labels))
+        #else:
+        #    data_generator = self.generate_batch(episodes, label_dicts)
 
+        data_generator = self.generate_batch(episodes, label_dicts)
         for step, (x, labels_batch) in enumerate(data_generator):
             for k, label in labels_batch.items():
                 label = torch.tensor(label).long().cpu()

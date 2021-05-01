@@ -45,7 +45,7 @@ def train_images(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir,
     wandb.log(final_f1_scores)
 
 # main training method
-def run_training(training_input, encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, batch_size, 
+def run_probe_training(training_input, encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, batch_size, 
                  tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels, 
                  tr_eps_tensors, val_eps_tensors, tr_lbls, val_lbls, test_eps_tensors, test_lbls):
   
