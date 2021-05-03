@@ -2,8 +2,14 @@ from .probe import ProbeTrainer
 
 # train using embeddings
 def train_embeddings(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, batch_size, 
-                 tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels):
-    probe_trainer = ProbeTrainer(encoder=None,
+                 tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels, use_encoder=False):
+
+    if use_encoder:
+      enc = encoder
+    else:
+      enc = None             
+    
+    probe_trainer = ProbeTrainer(encoder=enc,
                           epochs=num_epochs,
                           lr=lr,
                           batch_size=batch_size,
@@ -44,11 +50,11 @@ def train_images(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir,
 
 # main training method
 def run_probe_training(training_input, encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, batch_size, 
-                 tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels):
+                 tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels, use_encoder=False):
   
   if training_input == 'embeddings':
     train_embeddings(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, batch_size,
-                 tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels)
+                 tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels, use_encoder=False)
   elif training_input == 'images':
     train_images(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, batch_size,
                  tr_episodes, val_episodes, tr_labels, val_labels, 
