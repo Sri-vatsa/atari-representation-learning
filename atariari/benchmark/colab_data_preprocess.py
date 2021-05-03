@@ -67,3 +67,9 @@ def np_to_tensor(tr_eps, val_eps, test_eps):
   test_eps_tensors = [torch.from_numpy(np.array(x)).to(device) for x in test_eps]
   return tr_eps_tensors, val_eps_tensors, test_eps_tensors
 '''
+
+def squeeze_tensors(eps):
+  for i, ep in enumerate(eps):
+    for j, s in enumerate(ep):
+      eps[i][j] = torch.squeeze(eps[i][j])
+  return eps

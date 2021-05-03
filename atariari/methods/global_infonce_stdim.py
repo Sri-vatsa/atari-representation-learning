@@ -180,12 +180,12 @@ class CLIPGlobalInfoNCESpatioTemporalTrainer(Trainer):
             # Loss 1: Global at time t, f5 patches at time t-1
             f_t, f_t_prev = f_t_maps, f_t_prev_maps
 
-            print("f_t shape: {}".format(f_t.shape))
-            print("f_t_prev shape: {}".format(f_t_prev.shape))
+            #print("f_t shape: {}".format(f_t.shape))
+            #print("f_t_prev shape: {}".format(f_t_prev.shape))
 
             N = f_t.size(0)
             predictions = self.classifier1(f_t)
-            print("prediction shape: {}".format(predictions.shape))
+            #print("prediction shape: {}".format(predictions.shape))
             logits = torch.matmul(predictions, f_t_prev.t())
             step_loss = F.cross_entropy(logits, torch.arange(N).to(self.device))
             loss = step_loss
