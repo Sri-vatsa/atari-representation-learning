@@ -127,7 +127,7 @@ class CLIPGlobalInfoNCESpatioTemporalTrainer(Trainer):
         super().__init__(encoder, wandb, device)
         self.config = config
         self.patience = self.config["patience"]
-        self.classifier1 = nn.Linear(self.encoder.hidden_size, 256).to(device)
+        self.classifier1 = nn.Linear(self.encoder.hidden_size, self.encoder.feature_size).to(device)
         self.epochs = config['epochs']
         self.batch_size = config['batch_size']
         self.save_dir = config['save_dir']
