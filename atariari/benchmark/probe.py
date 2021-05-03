@@ -215,7 +215,7 @@ class ProbeTrainer():
             preds = probe(f)
         return preds
 
-    def do_one_epoch(self, episodes, label_dict):
+    def do_one_epoch(self, episodes, label_dicts):
         sample_label = label_dicts[0][0]
         epoch_loss, accuracy = {k + "_loss": [] for k in sample_label.keys() if
                                 not self.early_stoppers[k].early_stop}, \
