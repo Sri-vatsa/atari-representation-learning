@@ -182,6 +182,8 @@ class CLIPGlobalInfoNCESpatioTemporalTrainer(Trainer):
 
             N = f_t.size(0)
             predictions = self.classifier1(f_t)
+            print("prediction shape: {}".format(predictions.shape))
+            print("f_t_prev shape: {}".format(f_t_prev.shape))
             logits = torch.matmul(predictions, f_t_prev.t())
             step_loss = F.cross_entropy(logits, torch.arange(N).to(self.device))
             loss = step_loss
