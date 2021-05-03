@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 import os
 import glob 
+import natsort
 
 
 def compute_dict_average(metric_dict):
