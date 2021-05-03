@@ -150,9 +150,9 @@ def calculate_multiclass_accuracy(preds, labels):
     acc = float(np.sum((preds == labels).astype(int)) / len(labels))
     return acc
 
-def load_checkpoint(self, model_path, cls, to_train=True):
+def load_checkpoint(model_path, cls, input_size=512, output_size=512, to_train=True):
     '''Loads model'''
-    model = cls(input_dim=self.feature_size, num_classes=self.num_classes)
+    model = cls(input_size, output_size)
 
     if torch.cuda.is_available():
         model.load_state_dict(torch.load(model_path, map_location=torch.device("cuda")))
@@ -166,7 +166,7 @@ def load_checkpoint(self, model_path, cls, to_train=True):
         
     return model
 
-def load_encoder_from_checkpoint(path, model_name, cls, to_train=False, log=False):
+def load_encoder_from_checkpoint(path, model_name, cls, input_size=512, output_size=512, to_train=False, log=False):
         encoder = None
         path = os.path.join(path, "*") # get all files in folder
         all_files = glob.glob(path)

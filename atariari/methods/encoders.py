@@ -188,6 +188,7 @@ class LinearRepEncoder(nn.Module):
     self.device = "cuda" if torch.cuda.is_available() else "cpu"
     self.model = nn.Linear(input_size, output_size)
     self.model.to(self.device)
+    self.input_size = input_size
     self.feature_size = output_size
     self.hidden_size = self.feature_size
 
