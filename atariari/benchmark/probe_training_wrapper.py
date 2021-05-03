@@ -15,7 +15,7 @@ def train_embeddings(encoder, probe_type, num_epochs, lr, patience, wandb, save_
     probe_trainer.train(tr_episodes, val_episodes,
                       tr_labels, val_labels)
 
-    final_accuracies, final_f1_scores = probe_trainer.test(test_episodes, test_labels, batched_emb=test_eps_tensors, batched_labels=test_lbls)
+    final_accuracies, final_f1_scores = probe_trainer.test(test_episodes, test_labels)
 
     wandb.log(final_accuracies)
     wandb.log(final_f1_scores)
