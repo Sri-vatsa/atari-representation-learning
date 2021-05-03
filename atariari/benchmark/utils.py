@@ -175,7 +175,7 @@ def load_encoder_from_checkpoint(path, model_name, cls, to_train=False, log=Fals
         selected_file = list(filter(lambda x: "final" in ''.join(x.split('_')[:-1]), all_files))
 
         if len(selected_file) == 0:
-            sorted_list = natsort.natsorted(probe_specifc_files)
+            sorted_list = natsort.natsorted(encoder_specifc_files)
             if len(encoder_specifc_files) > 0:
                 selected_file = [sorted_list[-1]]
             else:
