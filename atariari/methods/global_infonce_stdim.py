@@ -224,7 +224,7 @@ class CLIPGlobalInfoNCESpatioTemporalTrainer(Trainer):
             self.encoder.eval(), self.classifier1.eval()
             self.do_one_epoch(e, val_eps)
             
-            if e % save_interval == 0:
+            if e % save_interval == 0 and e != 0:
                 self.save_checkpoint(self.name, self.encoder, num_epochs=e)
 
             if self.early_stopper.early_stop:

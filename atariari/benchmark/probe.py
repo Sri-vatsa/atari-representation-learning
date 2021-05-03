@@ -404,7 +404,7 @@ class ProbeTrainer():
                 if not self.early_stoppers[k].early_stop:
                     scheduler.step(val_accuracy['val_' + k + '_acc'])
             e += 1
-            if e % save_interval == 0:
+            if e % save_interval == 0 and e != 0:
                 self.save_probe_checkpoints(epochs=e)
             all_probes_stopped = np.all([early_stopper.early_stop for early_stopper in self.early_stoppers.values()])
         print("All probes early stopped!")
