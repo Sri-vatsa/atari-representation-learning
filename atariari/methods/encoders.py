@@ -6,6 +6,7 @@ import time
 from atariari.benchmark.utils import download_run
 from atariari.benchmark.episodes import checkpointed_steps_full_sorted
 import os
+import clip
 
 class Flatten(nn.Module):
     def forward(self, x):
@@ -179,3 +180,43 @@ class PPOEncoder(nn.Module):
                                                             self.masks,
                                                             deterministic=False)
         return feature_vectors
+
+
+class LinearRepEncoder(nn.Module):
+  def __init__(self, input_size, output_size):
+    super().__init__()
+    self.device = "cuda" if torch.cuda.is_available() else "cpu"
+    self.model = nn.Linear(input_size, output_size)
+    self.model.to(self.device)
+    self.feature_size = output_size
+    self.hidden_size = self.feature_size
+
+  def forward(self, inputs):
+      x = self.model(inputs)
+      return x
+
+
+class ClipEncoder(nn.Module):
+  def __init__(self, input_channels, feature_size):
+    super().__init__()
+    self.device = "cuda" if torch.cuda.is_available() else "cpu"
+    self.clip_model, _ = clip.load("ViT-B/32", device=self.device, jit=False)
+    self.preprocess = Compose([
+        Resize((224, 224), interpolation=Image.BICUBIC),
+        Normalize(
+          (0.48145466, 0.4578275, 0.40821073),
+          (0.26862954, 0.26130258, 0.27577711)
+        )
+    ])
+    self.feature_size = feature_size
+    self.input_channels = input_channels
+
+  def forward(self, inputs):
+      x = self.get_clip_features(inputs)
+      x = x.view(x.size(0), -1)
+      return x
+  
+  def get_clip_features(self, image):
+    with torch.no_grad():
+      image_features = self.clip_model.encode_image(self.preprocess(image)).float()
+    return image_features

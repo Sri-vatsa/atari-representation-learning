@@ -146,3 +146,43 @@ def calculate_multiclass_f1_score(preds, labels):
 def calculate_multiclass_accuracy(preds, labels):
     acc = float(np.sum((preds == labels).astype(int)) / len(labels))
     return acc
+
+def load_checkpoint(self, model_path, cls, to_train=True):
+    '''Loads model'''
+    model = cls(input_dim=self.feature_size, num_classes=self.num_classes)
+
+    if torch.cuda.is_available():
+        model.load_state_dict(torch.load(model_path, map_location=torch.device("cuda")))
+    else:
+        model.load_state_dict(torch.load(model_path, map_location=torch.device("cpu")))
+
+    if to_train:
+        model.train()
+    else:
+        model.eval()
+        
+    return model
+
+def load_encoder_from_checkpoint(path, model_name, cls, to_train=False, log=False):
+        encoder = None
+        path = os.path.join(path, "*") # get all files in folder
+        all_files = glob.glob(path)
+        
+        encoder_specifc_files = list(filter(lambda x: model_name in ''.join(x.split('_')[:-1]), all_files))
+        selected_file = list(filter(lambda x: "final" in ''.join(x.split('_')[:-1]), all_files))
+
+        if len(selected_file) == 0:
+            sorted_list = natsort.natsorted(probe_specifc_files)
+            if len(encoder_specifc_files) > 0:
+                selected_file = [sorted_list[-1]]
+            else:
+                selected_file = []
+        
+        model_path = selected_file[0] if len(selected_file) > 0 else None
+        if model_path:
+            encoder = load_checkpoint(model_path, cls, to_train=to_train)
+        
+        if not encoder:
+            raise Exception("No trained models found...Either train encoder or change directory to load from...")
+
+        return encoder
