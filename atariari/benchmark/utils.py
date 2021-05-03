@@ -3,6 +3,7 @@ import torch
 from sklearn.metrics import f1_score as compute_f1_score
 from pathlib import Path
 import numpy as np
+import os
 
 
 def compute_dict_average(metric_dict):
