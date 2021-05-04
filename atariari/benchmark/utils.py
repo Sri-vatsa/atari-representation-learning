@@ -171,8 +171,10 @@ def load_encoder_from_checkpoint(path, model_name, cls, input_size=512, output_s
         path = os.path.join(path, "*") # get all files in folder
         all_files = glob.glob(path)
         
-        encoder_specifc_files = list(filter(lambda x: model_name in ''.join(x.split('_')[:-1]), all_files))
-        selected_file = list(filter(lambda x: "final" in ''.join(x.split('_')[:-1]), all_files))
+        #encoder_specifc_files = list(filter(lambda x: model_name in ''.join(x.split('_')[:-1]), all_files))
+        #selected_file = list(filter(lambda x: "final" in ''.join(x.split('_')[:-1]), all_files))
+        encoder_specifc_files = list(filter(lambda x: model_name in ''.join(x.split('/')[-1]), all_files))
+        selected_file = list(filter(lambda x: "final" in ''.join(x.split('/')[-1]), all_files))
 
         if len(selected_file) == 0:
             sorted_list = natsort.natsorted(encoder_specifc_files)
