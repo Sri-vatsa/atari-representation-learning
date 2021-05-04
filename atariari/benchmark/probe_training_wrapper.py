@@ -54,7 +54,7 @@ def run_probe_training(training_input, encoder, probe_type, num_epochs, lr, pati
   
   if training_input == 'embeddings':
     train_embeddings(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, batch_size,
-                 tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels, use_encoder=False)
+                 tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels, use_encoder=use_encoder)
   elif training_input == 'images':
     train_images(encoder, probe_type, num_epochs, lr, patience, wandb, save_dir, batch_size,
                  tr_episodes, val_episodes, tr_labels, val_labels, 
