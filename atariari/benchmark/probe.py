@@ -355,7 +355,7 @@ class ProbeTrainer():
                 else:
                     num_epochs = int(int_list[0]) # assumes first number that exists in the model filepath is num epochs
                     print("selected num_epochs: {}".format(num_epochs))
-                return num_epochs + 1
+                return num_epochs
         print("returned 0 epochs trained 2")  # folder exists but no trained models
         return 0    
 
@@ -373,7 +373,7 @@ class ProbeTrainer():
             e = self.epochs
             print("Probes have already been trained, but are trying to be trained again...")
         elif (self.epochs - num_epochs_trained) > 0:
-            e = num_epochs_trained
+            e = num_epochs_trained + 1
         else:
             e = 0
 
