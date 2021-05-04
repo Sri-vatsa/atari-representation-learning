@@ -308,7 +308,7 @@ class ProbeTrainer():
 
         print("All probe checkpoints saved!")
 
-    def load_probe_checkpoints(self, path, cls=LinearProbe, to_train=False, log=False):
+    def load_probe_checkpoints(self, path, cls=LinearProbe, to_train=False, log=True):
         path = os.path.join(path, "*") # get all files in folder
         all_files = glob.glob(path)
         self.loaded_model_paths = {}
