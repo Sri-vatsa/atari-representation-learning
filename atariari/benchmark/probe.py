@@ -330,7 +330,7 @@ class ProbeTrainer():
                 self.probes[k] = self.load_checkpoint(model_path, to_train=to_train, cls=cls)
         
         if log:
-            for k, loaded_path in loaded_model_paths.items():
+            for k, loaded_path in self.loaded_model_paths.items():
                 print("K: {}, Loaded path: {}".format(k, loaded_path))
 
     def get_num_epochs_trained(self):
