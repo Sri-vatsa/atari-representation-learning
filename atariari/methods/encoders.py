@@ -196,6 +196,25 @@ class LinearRepEncoder(nn.Module):
       x = self.model(inputs)
       return x
 
+class MLPRepEncoder(nn.Module):
+  def __init__(self, input_size, hidden_size, output_size):
+    super().__init__()
+    #self.device = "cuda" if torch.cuda.is_available() else "cpu"
+    self.input_size = input_size
+    self.feature_size = output_size
+    #self.hidden_size = self.feature_size
+
+    self.layer1 = nn.Linear(input_size, hidden_size)
+    self.relu = nn.ReLU()
+    self.layer2 = nn.Linear(hidden_size, output_size)
+    self.sigmoid = nn.Sigmoid()
+
+  def forward(self, inputs):
+      x = self.layer1(inputs)
+      x = self.relu(x)
+      x = self.layer2(x)
+      return self.sigmoid(x)
+
 
 class ClipEncoder(nn.Module):
   def __init__(self, input_channels, feature_size):
