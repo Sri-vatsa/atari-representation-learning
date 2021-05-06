@@ -36,7 +36,7 @@ def get_file_names(input_resolution):
     return "clip_embeddings_train", "clip_embeddings_val", "clip_embeddings_test"
   elif input_resolution == "2x2patch":
     return "clip_embeddings_2x2_patches_train", "clip_embeddings_2x2_patches_val", "clip_embeddings_2x2_patches_test"
-  elif input_resolution == "4x4patch"
+  elif input_resolution == "4x4patch":
     return "clip_embeddings_4x4_patches_train", "clip_embeddings_4x4_patches_val", "clip_embeddings_4x4_patches_test"
   else:
     raise Exception("Invalid input resolution... choose among 'full-image', '2x2patch' & '4x4patch'")
