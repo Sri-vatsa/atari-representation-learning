@@ -30,14 +30,27 @@ def get_episode_data(images_n_labels_dir, env_name, steps, collect_mode, color=T
                                         collect_mode=collect_mode,
                                         color=color)
   return tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels
+  
+def get_file_names(input_resolution):
+  if input_resolution == "full-image":
+    return "clip_embeddings_train", "clip_embeddings_val", "clip_embeddings_test"
+  elif input_resolution == "2x2patch":
+    return "clip_embeddings_2x2_patches_train", "clip_embeddings_2x2_patches_val", "clip_embeddings_2x2_patches_test"
+  elif input_resolution == "4x4patch"
+    return "clip_embeddings_4x4_patches_train", "clip_embeddings_4x4_patches_val", "clip_embeddings_4x4_patches_test"
+  else:
+    raise Exception("Invalid input resolution... choose among 'full-image', '2x2patch' & '4x4patch'")
+    
+def get_embedding_data(embeddings_dir, input_resolution="full-image"):
 
-def get_embedding_data(embeddings_dir):
+  tr, val, test = get_file_names(input_resolution)
+
   try:
-    tr_episodes = torch.load(os.path.join(embeddings_dir, "clip_embeddings_train"))
+    tr_episodes = torch.load(os.path.join(embeddings_dir, tr))
     tr_labels = load_npy(os.path.join(embeddings_dir, "train_labels.npz"))
-    val_episodes = torch.load(os.path.join(embeddings_dir, "clip_embeddings_val"))
+    val_episodes = torch.load(os.path.join(embeddings_dir, val))
     val_labels = load_npy(os.path.join(embeddings_dir, "val_labels.npz"))
-    test_episodes = torch.load(os.path.join(embeddings_dir, "clip_embeddings_test"))
+    test_episodes = torch.load(os.path.join(embeddings_dir, test))
     test_labels = load_npy(os.path.join(embeddings_dir, "test_labels.npz"))
 
   except:
@@ -45,11 +58,11 @@ def get_embedding_data(embeddings_dir):
 
   return tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels
 
-def get_data(data_type, data_dir, env_name, steps, collect_mode, color=True):
+def get_data(data_type, data_dir, env_name, steps, collect_mode, color=True, input_resolution="full-image"):
   if data_type == "embeddings":
     tr_episodes, val_episodes,\
     tr_labels, val_labels,\
-    test_episodes, test_labels = get_embedding_data(data_dir)
+    test_episodes, test_labels = get_embedding_data(data_dir, input_resolution=input_resolution)
   elif data_type == "images":
     tr_episodes, val_episodes,\
     tr_labels, val_labels,\
@@ -67,6 +80,17 @@ def np_to_tensor(tr_eps, val_eps, test_eps):
   test_eps_tensors = [torch.from_numpy(np.array(x)).to(device) for x in test_eps]
   return tr_eps_tensors, val_eps_tensors, test_eps_tensors
 '''
+
+def concatcat_patch_embeddings(eps, num_patches=4):
+  processed_eps = []
+  for i, ep in enumerate(eps):
+    processed_ep = []
+    for j, s in enumerate(ep):
+      if j % num_patches == 0:
+        processed_emb = torch.cat(eps[i][j:j+num_patches], dim=0)
+        processed_ep.append(processed_emb)
+    processed_eps.append(processed_ep)
+  return processed_eps
 
 def squeeze_tensors(eps):
   for i, ep in enumerate(eps):
