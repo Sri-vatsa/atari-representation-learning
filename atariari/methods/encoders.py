@@ -259,3 +259,22 @@ class ClipEncoder(nn.Module):
     with torch.no_grad():
       image_features = self.clip_model.encode_image(self.preprocess(image)).float()
     return image_features
+
+class MLPCPCEncoder(nn.Module):
+  def __init__(self, input_size, hidden_size, output_size):
+    super().__init__()
+    #self.device = "cuda" if torch.cuda.is_available() else "cpu"
+    self.input_size = input_size
+    self.feature_size = output_size
+    self.hidden_size = self.feature_size
+
+    self.layer1 = nn.Linear(input_size, hidden_size)
+    self.relu1 = nn.ReLU()
+    self.layer2 = nn.Linear(hidden_size, output_size)
+    self.relu2 = nn.ReLU()
+
+  def forward(self, inputs):
+      x = self.layer1(inputs)
+      x = self.relu1(x)
+      x = self.layer2(x)
+      return self.relu2(x)
