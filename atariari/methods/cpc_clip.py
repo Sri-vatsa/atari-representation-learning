@@ -19,6 +19,10 @@ class CLIPCPCTrainer(Trainer):
 
         self.device = device
         self.steps_gen = lambda: range(self.steps_start, self.steps_end, self.steps_step)
+        print("steps gen: {}".format(self.steps_gen))
+        print("steps start: {}".format(self.steps_start))
+        print("steps end: {}".format(self.steps_end))
+        print("steps step: {}".format(self.steps_step))
         self.discriminators = {i: nn.Linear(self.gru_size, self.encoder.hidden_size).to(device) for i in self.steps_gen()}
         self.gru = nn.GRU(input_size=self.encoder.hidden_size, hidden_size=self.gru_size, num_layers=self.gru_layers, batch_first=True).to(device)
         self.labels = {i: torch.arange(self.batch_size * (self.sequence_length - i - 1)).to(device) for i in self.steps_gen()}
