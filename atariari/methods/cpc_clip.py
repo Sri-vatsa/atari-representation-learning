@@ -63,7 +63,7 @@ class CLIPCPCTrainer(Trainer):
                 print("sequence shape: {}".format(sequence.shape))
                 #channels, w, h = self.config['obs_space'][-3:]
                 #flat_sequence = sequence.view(-1, channels, w, h)
-                latents = self.encoder(flat_sequence)
+                latents = self.encoder(sequence)
                 print("z shape: {}".format(latents.shape))
                 latents = latents.view(
                     self.batch_size, self.sequence_length, self.encoder.hidden_size)
