@@ -65,8 +65,11 @@ class CPCTrainer(Trainer):
                 for i in self.steps_gen():
                   predictions = self.discriminators[i](contexts[:, :-(i+1), :]).contiguous().view(-1, self.encoder.hidden_size)
                   targets = latents[:, i+1:, :].contiguous().view(-1, self.encoder.hidden_size)
+                  print("predictions {}: {}".format(i, predictions))
+                  print("targets {}: {}".format(i, targets))
                   logits = torch.matmul(predictions, targets.t())
                   step_loss = F.cross_entropy(logits, self.labels[i])
+                  print("step_loss {}: {}".format(i, step_loss))
                   step_losses[i].append(step_loss.detach().item())
                   loss += step_loss
 
