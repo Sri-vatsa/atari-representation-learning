@@ -19,7 +19,8 @@ class CLIPCPCTrainer(Trainer):
 
         self.device = device
         self.steps_gen = lambda: range(self.steps_start, self.steps_end, self.steps_step)
-        print("steps gen: {}".format(self.steps_gen))
+        for i in self.steps_gen():
+            print("steps gen i: {}".format(i))
         print("steps start: {}".format(self.steps_start))
         print("steps end: {}".format(self.steps_end))
         print("steps step: {}".format(self.steps_step))
