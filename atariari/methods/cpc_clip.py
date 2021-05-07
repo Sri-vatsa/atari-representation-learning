@@ -77,7 +77,9 @@ class CLIPCPCTrainer(Trainer):
                   step_loss = F.cross_entropy(logits, self.labels[i])
                   step_losses[i].append(step_loss.detach().item())
                   loss += step_loss
-
+                  
+                  print("logits shape: {}".format(logits.shape))
+                  print("argmax shape: {}".format(torch.argmax(logits, dim=1)))
                   preds = torch.argmax(logits, dim=1)
                   step_accuracy = preds.eq(self.labels[i]).sum().float() / self.labels[i].numel()
                   step_accuracies[i].append(step_accuracy.detach().item())
