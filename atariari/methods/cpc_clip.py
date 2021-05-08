@@ -111,7 +111,8 @@ class CLIPCPCTrainer(Trainer):
             self.do_one_epoch(e, val_eps)
             if self.early_stopper.early_stop:
                 break
-        torch.save(self.encoder.state_dict(), os.path.join(self.save_dir,  self.config['env_name'] + '.pt'))
+        torch.save(self.encoder.state_dict(), os.path.join(self.save_dir,  self.config['model_name'] + '.pt'))
+        return self.encoder
 
     def log_results(self, epoch_idx, epoch_losses, epoch_accuracies, prefix=""):
         print("Epoch: {}".format(epoch_idx))
