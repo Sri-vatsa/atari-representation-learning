@@ -98,7 +98,7 @@ def concat_patch_embeddings_with_full_img(patch_eps, full_eps, num_patches=4):
     processed_ep = []
     for j, s in enumerate(ep):
       if j % num_patches == 0:
-        processed_emb = torch.cat(eps[i][j:j+num_patches], dim=0)
+        processed_emb = torch.cat(patch_eps[i][j:j+num_patches], dim=0)
         index_full =  j // num_patches
         processed_emb = torch.cat([processed_emb, full_eps[i][index_full]], dim=0)
         processed_ep.append(processed_emb)
