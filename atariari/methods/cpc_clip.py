@@ -60,15 +60,15 @@ class CLIPCPCTrainer(Trainer):
             with torch.set_grad_enabled(mode == 'train'):
                 sequence = sequence.to(self.device)
                 sequence = sequence / 255.
-                print("sequence shape: {}".format(sequence.shape))
+                #print("sequence shape: {}".format(sequence.shape))
                 #channels, w, h = self.config['obs_space'][-3:]
                 #flat_sequence = sequence.view(-1, channels, w, h)
                 latents = self.encoder(sequence)
-                print("z shape: {}".format(latents.shape))
+                #print("z shape: {}".format(latents.shape))
                 latents = latents.view(
                     self.batch_size, self.sequence_length, self.encoder.hidden_size)
                 contexts, _ = self.gru(latents)
-                print("c shape: {}".format(contexts.shape))
+                #print("c shape: {}".format(contexts.shape))
                 loss = 0.
                 for i in self.steps_gen():
                   predictions = self.discriminators[i](contexts[:, :-(i+1), :]).contiguous().view(-1, self.encoder.hidden_size)
@@ -78,8 +78,8 @@ class CLIPCPCTrainer(Trainer):
                   step_losses[i].append(step_loss.detach().item())
                   loss += step_loss
                   
-                  print("logits shape: {}".format(logits.shape))
-                  print("argmax shape: {}".format(torch.argmax(logits, dim=1)))
+                  #print("logits shape: {}".format(logits.shape))
+                  #print("argmax shape: {}".format(torch.argmax(logits, dim=1).shape))
                   preds = torch.argmax(logits, dim=1)
                   step_accuracy = preds.eq(self.labels[i]).sum().float() / self.labels[i].numel()
                   step_accuracies[i].append(step_accuracy.detach().item())
@@ -92,7 +92,9 @@ class CLIPCPCTrainer(Trainer):
             steps += 1
         epoch_losses = {i: np.mean(step_losses[i]) for i in step_losses}
         epoch_accuracies = {i: np.mean(step_accuracies[i]) for i in step_accuracies}
-        self.log_results(epoch, epoch_losses, epoch_accuracies, prefix=mode)
+        if mode == "train":
+            self.log_results(epoch, epoch_losses, epoch_accuracies, prefix=mode)
+
         if mode == "val":
             self.early_stopper(np.mean(list(epoch_accuracies.values())), self.encoder)
 
@@ -109,7 +111,7 @@ class CLIPCPCTrainer(Trainer):
             self.do_one_epoch(e, val_eps)
             if self.early_stopper.early_stop:
                 break
-        torch.save(self.encoder.state_dict(), os.path.join(self.wandb.run.dir,  self.config['env_name'] + '.pt'))
+        torch.save(self.encoder.state_dict(), os.path.join(self.save_dir,  self.config['env_name'] + '.pt'))
 
     def log_results(self, epoch_idx, epoch_losses, epoch_accuracies, prefix=""):
         print("Epoch: {}".format(epoch_idx))
