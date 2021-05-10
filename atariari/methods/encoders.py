@@ -278,3 +278,15 @@ class MLPCPCEncoder(nn.Module):
       x = self.relu1(x)
       x = self.layer2(x)
       return self.relu2(x)
+
+class LinearCPCEncoder(nn.Module):
+  def __init__(self, input_size, output_size):
+    super().__init__()
+    self.input_size = input_size
+    self.feature_size = output_size
+    self.hidden_size = self.feature_size
+
+    self.model = nn.Linear(input_size, output_size)
+
+  def forward(self, inputs):
+      return self.model(x)
