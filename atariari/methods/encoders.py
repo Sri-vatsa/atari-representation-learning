@@ -289,4 +289,4 @@ class LinearCPCEncoder(nn.Module):
     self.model = nn.Linear(input_size, output_size)
 
   def forward(self, inputs):
-      return self.model(x)
+      return self.model(inputs)
