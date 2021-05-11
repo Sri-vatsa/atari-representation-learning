@@ -32,6 +32,7 @@ class CLIPCPCTrainer(Trainer):
           params += disc.parameters()
         self.optimizer = torch.optim.Adam(params, lr=config['lr'])
         self.early_stopper = EarlyStopping(patience=self.patience, verbose=False, wandb=self.wandb, name="encoder")
+        self.name = config['model_name']
 
     def generate_batch(self, episodes):
         episodes = [episode for episode in episodes if len(episode) >= self.sequence_length]
@@ -98,7 +99,7 @@ class CLIPCPCTrainer(Trainer):
         if mode == "val":
             self.early_stopper(np.mean(list(epoch_accuracies.values())), self.encoder)
 
-    def train(self, tr_eps, val_eps):
+    def train(self, tr_eps, val_eps, save_interval=5):
         for e in range(self.epochs):
             self.encoder.train(), self.gru.train()
             for k, disc in self.discriminators.items():
@@ -109,10 +110,24 @@ class CLIPCPCTrainer(Trainer):
             for k, disc in self.discriminators.items():
                 disc.eval()
             self.do_one_epoch(e, val_eps)
+
+            if e % save_interval == 0 and e != 0:
+                self.save_checkpoint(self.name, self.encoder, num_epochs=e)
+
             if self.early_stopper.early_stop:
                 break
-        torch.save(self.encoder.state_dict(), os.path.join(self.save_dir,  self.config['model_name'] + '.pt'))
+        self.save_checkpoint(self.name, self.encoder, num_epochs=None)
         return self.encoder
+    
+    def save_checkpoint(self, name, model, num_epochs=None):
+        '''Saves model'''
+        
+        if num_epochs:
+            filepath = str(self.save_dir) + "/" + str(name) + '_' + str(num_epochs) + ".pt"
+        else:
+            filepath = str(self.save_dir) + "/" + str(name) + '_' + "final" + ".pt"
+
+        torch.save(model.state_dict(), filepath)
 
     def log_results(self, epoch_idx, epoch_losses, epoch_accuracies, prefix=""):
         print("Epoch: {}".format(epoch_idx))

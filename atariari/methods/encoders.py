@@ -215,6 +215,22 @@ class MLPRepEncoder(nn.Module):
       x = self.layer2(x)
       return self.sigmoid(x)
 
+class LinearGRURepEncoder(nn.Module):
+  def __init__(self, input_size, hidden_size, output_size, gru_layers=2):
+    super().__init__()
+    #self.device = "cuda" if torch.cuda.is_available() else "cpu"
+    self.input_size = input_size
+    self.feature_size = output_size
+    #self.hidden_size = self.feature_size
+
+    self.linear = nn.Linear(input_size, hidden_size)
+    self.gru = nn.GRU(input_size=hidden_size, hidden_size=output_size, num_layers=gru_layers, batch_first=True)
+
+  def forward(self, inputs):
+      x = self.linear(inputs)
+      x = self.gru(x)
+      return x
+
 class MLPRepEncoder2(nn.Module):
   def __init__(self, input_size, hidden_size, output_size):
     super().__init__()
