@@ -105,6 +105,21 @@ def concat_patch_embeddings_with_full_img(patch_eps, full_eps, num_patches=4):
     processed_eps.append(processed_ep)
   return processed_eps
 
+def concat_multiple_patch_embeddings_with_full_img(patch_eps1, patch_eps2, full_eps, num_patches1=16, num_patches2=4):
+  processed_eps = []
+  for i, ep in enumerate(patch_eps1):
+    processed_ep = []
+    for j, s in enumerate(ep):
+      if j % num_patches1 == 0:
+        processed_emb_4x4 = torch.cat(patch_eps1[i][j:j+num_patches1], dim=0)
+        index_full =  j // num_patches1
+        index_2x2 = j // num_patches2
+        processed_emb_2x2 = torch.cat(patch_eps2[i][index_2x2:index_2x2+num_patches1], dim=0)
+        processed_emb = torch.cat([processed_emb_4x4, processed_emb_2x2, full_eps[i][index_full]], dim=0)
+        processed_ep.append(processed_emb)
+    processed_eps.append(processed_ep)
+  return processed_eps
+
 def squeeze_tensors(eps):
   for i, ep in enumerate(eps):
     for j, s in enumerate(ep):
