@@ -38,6 +38,12 @@ def get_file_names(input_resolution):
     return "clip_embeddings_2x2_patches_train", "clip_embeddings_2x2_patches_val", "clip_embeddings_2x2_patches_test"
   elif input_resolution == "4x4patch":
     return "clip_embeddings_4x4_patches_train", "clip_embeddings_4x4_patches_val", "clip_embeddings_4x4_patches_test"
+  elif input_resolution == "gaussian_blur":
+    return "gaussian_blur_clip_embeddings_train", "gaussian_blur_clip_embeddings_val", "gaussian_blur_clip_embeddings_test"
+  elif input_resolution == "colour_jitter":
+    return "colour_jitter_clip_embeddings_train", "colour_jitter_clip_embeddings_val", "colour_jitter_clip_embeddings_test"
+  elif input_resolution == "random_crop":
+    return "random_crop_clip_embeddings_train", "random_crop_clip_embeddings_val", "random_crop_clip_embeddings_test"
   else:
     raise Exception("Invalid input resolution... choose among 'full-image', '2x2patch' & '4x4patch'")
     
