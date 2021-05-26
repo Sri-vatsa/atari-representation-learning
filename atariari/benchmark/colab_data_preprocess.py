@@ -38,6 +38,12 @@ def get_file_names(input_resolution):
     return "clip_embeddings_2x2_patches_train", "clip_embeddings_2x2_patches_val", "clip_embeddings_2x2_patches_test"
   elif input_resolution == "4x4patch":
     return "clip_embeddings_4x4_patches_train", "clip_embeddings_4x4_patches_val", "clip_embeddings_4x4_patches_test"
+  elif input_resolution == "gaussian_blur":
+    return "gaussian_blur_clip_embeddings_train", "gaussian_blur_clip_embeddings_val", "gaussian_blur_clip_embeddings_test"
+  elif input_resolution == "colour_jitter":
+    return "colour_jitter_clip_embeddings_train", "colour_jitter_clip_embeddings_val", "colour_jitter_clip_embeddings_test"
+  elif input_resolution == "random_crop":
+    return "random_crop_clip_embeddings_train", "random_crop_clip_embeddings_val", "random_crop_clip_embeddings_test"
   else:
     raise Exception("Invalid input resolution... choose among 'full-image', '2x2patch' & '4x4patch'")
     
@@ -101,6 +107,21 @@ def concat_patch_embeddings_with_full_img(patch_eps, full_eps, num_patches=4):
         processed_emb = torch.cat(patch_eps[i][j:j+num_patches], dim=0)
         index_full =  j // num_patches
         processed_emb = torch.cat([processed_emb, full_eps[i][index_full]], dim=0)
+        processed_ep.append(processed_emb)
+    processed_eps.append(processed_ep)
+  return processed_eps
+
+def concat_multiple_patch_embeddings_with_full_img(patch_eps1, patch_eps2, full_eps, num_patches1=16, num_patches2=4):
+  processed_eps = []
+  for i, ep in enumerate(patch_eps1):
+    processed_ep = []
+    for j, s in enumerate(ep):
+      if j % num_patches1 == 0:
+        processed_emb_4x4 = torch.cat(patch_eps1[i][j:j+num_patches1], dim=0)
+        index_full =  j // num_patches1
+        index_2x2 = j // num_patches2
+        processed_emb_2x2 = torch.cat(patch_eps2[i][index_2x2:index_2x2+num_patches1], dim=0)
+        processed_emb = torch.cat([processed_emb_4x4, processed_emb_2x2, full_eps[i][index_full]], dim=0)
         processed_ep.append(processed_emb)
     processed_eps.append(processed_ep)
   return processed_eps
