@@ -52,6 +52,22 @@ class NonLinearProbe3(nn.Module):
     def forward(self, feature_vectors):
         return self.sigmoid(self.linear(feature_vectors))
 
+class NonLinearProbe4(nn.Module):
+    def __init__(self, input_dim, num_hidden=300, num_classes=255):
+        super().__init__()
+        self.linear1 = nn.Linear(in_features=input_dim, out_features=num_hidden)
+        self.relu1 = nn.ReLU()
+        self.linear2 = nn.Linear(in_features=num_hidden, out_features=num_hidden)
+        self.relu2 = nn.ReLU()
+        self.linear3 = nn.Linear(in_features=num_hidden, out_features=num_classes)
+
+    def forward(self, feature_vectors):
+        x = self.linear1(feature_vectors)
+        x = self.relu1(x)
+        x = self.linear2(x)
+        x = self.relu2(x)
+        return self.linear3(x)
+
 class LstmProbe(nn.Module):
     def __init__(self, input_dim, n_layers=2, n_hidden=300, num_classes=255):
         super().__init__()
@@ -104,7 +120,7 @@ class ProbeTrainer():
         self.method = method_name
         self.feature_size = representation_len
         self.loss_fn = nn.CrossEntropyLoss() 
-        self.valid_probe_types = set(['linear', 'lstm', 'non-linear-1', 'non-linear-2', 'non-linear-3'])
+        self.valid_probe_types = set(['linear', 'lstm', 'non-linear-1', 'non-linear-2', 'non-linear-3', 'non-linear-4'])
 
         if not self.is_probe_type_valid(probe_type):
             raise Exception("Invalid probe type. Pick amongst ")
@@ -155,6 +171,12 @@ class ProbeTrainer():
 
         elif self.probe_type=='non-linear-3':
             self.probes = {k: NonLinearProbe3(input_dim=self.feature_size,
+                                          num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
+
+            self.load_probe_checkpoints(self.save_dir, to_train=True)
+        
+        elif self.probe_type=='non-linear-4':
+            self.probes = {k: NonLinearProbe4(input_dim=self.feature_size,
                                           num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
 
             self.load_probe_checkpoints(self.save_dir, to_train=True)
