@@ -308,3 +308,29 @@ class LinearCPCEncoder(nn.Module):
 
   def forward(self, inputs):
       return self.model(inputs)
+
+class LinearSTDIMEncoder(nn.Module):
+  def __init__(self, input_size, output_size, n_patches, feature_size=512, log=False):
+    super().__init__()
+    self.device = "cuda" if torch.cuda.is_available() else "cpu"
+    self.model = nn.Linear(input_size, output_size)
+    self.model.to(self.device)
+    self.input_size = input_size
+    self.feature_size = feature_size
+    self.hidden_size = feature_size
+    self.patch_emb_size = n_patches * feature_size
+
+  def forward(self, inputs, fmaps=False):
+      x = self.model(inputs)
+      if fmaps:
+          fmaps_out = {
+              'patch': x[:, self.feature_size:]
+              'full': x[:, :self.feature_size]
+          }
+
+          if log:
+              print(fmaps_out)
+
+          return fmaps_out
+          
+      return x
