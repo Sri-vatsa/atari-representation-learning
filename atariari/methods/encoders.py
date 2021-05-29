@@ -323,14 +323,14 @@ class LinearSTDIMEncoder(nn.Module):
   def forward(self, inputs, fmaps=False):
       x = self.model(inputs)
       if fmaps:
-          fmaps_out = {
-              'patch': x[:, self.feature_size:]
-              'full': x[:, :self.feature_size]
-          }
+        fmaps_out = {
+            'patch': x[:, self.feature_size:],
+            'full': x[:, :self.feature_size]
+        }
 
-          if log:
-              print(fmaps_out)
+        if log:
+            print(fmaps_out)
 
-          return fmaps_out
+        return fmaps_out
           
       return x
