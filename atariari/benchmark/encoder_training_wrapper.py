@@ -2,6 +2,7 @@ import torch
 
 from atari_rl.atariari.methods.global_infonce_stdim import CLIPGlobalInfoNCESpatioTemporalTrainer
 from atari_rl.atariari.methods.global_local_infonce import CLIPGlobalLocalInfoNCESpatioTemporalTrainer
+from atari_rl.atariari.methods.stdim import CLIPInfoNCESpatioTemporalTrainer
 from atari_rl.atariari.methods.cpc_clip import CLIPCPCTrainer
 
 def run_encoder_training(encoder, tr_eps, val_eps, config, wandb, method="global-infonce-stdim"):
