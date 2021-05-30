@@ -316,7 +316,7 @@ class LinearSTDIMEncoder(nn.Module):
     self.model = nn.Linear(input_size, output_size)
     self.model.to(self.device)
     self.input_size = input_size
-    self.hidden_size = emb_size
+    self.hidden_size = full_img_emb_size
     self.patch_emb_size = n_patches * emb_size
     self.full_img_emb_size = full_img_emb_size
     self.feature_size = output_size
@@ -324,6 +324,42 @@ class LinearSTDIMEncoder(nn.Module):
 
   def forward(self, inputs, fmaps=False):
       x = self.model(inputs)
+      if fmaps:
+        fmaps_out = {
+            'patch': x[:, self.full_img_emb_size:],
+            'full': x[:, :self.full_img_emb_size]
+        }
+
+        if self.log:
+            print(fmaps_out)
+
+        return fmaps_out
+          
+      return x
+
+class MLPSTDIMEncoder(nn.Module):
+  def __init__(self, input_size, output_size, n_patches, full_img_emb_size=512, emb_size=512, log=False):
+    super().__init__()
+    self.device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    self.input_size = input_size
+    self.hidden_size = full_img_emb_size
+    self.patch_emb_size = n_patches * emb_size
+    self.full_img_emb_size = full_img_emb_size
+    self.feature_size = output_size
+    self.log = log
+
+    self.layer1 = nn.Linear(input_size, self.full_img_emb_size + self.patch_emb_size)
+    self.relu1 = nn.ReLU()
+    self.layer2 = nn.Linear(self.full_img_emb_size + self.patch_emb_size, output_size)
+    self.relu2 = nn.ReLU()
+
+  def forward(self, inputs, fmaps=False):
+      x = self.layer1(inputs)
+      x = self.relu1(x)
+      x = self.layer2(x)
+      x = self.relu2(x)
+      
       if fmaps:
         fmaps_out = {
             'patch': x[:, self.full_img_emb_size:],
