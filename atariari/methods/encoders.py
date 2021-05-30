@@ -319,6 +319,7 @@ class LinearSTDIMEncoder(nn.Module):
     self.feature_size = feature_size
     self.hidden_size = feature_size
     self.patch_emb_size = n_patches * feature_size
+    self.log =  log
 
   def forward(self, inputs, fmaps=False):
       x = self.model(inputs)
@@ -328,7 +329,7 @@ class LinearSTDIMEncoder(nn.Module):
             'full': x[:, :self.feature_size]
         }
 
-        if log:
+        if self.log:
             print(fmaps_out)
 
         return fmaps_out
