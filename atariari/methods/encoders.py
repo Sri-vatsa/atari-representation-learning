@@ -319,7 +319,7 @@ class LinearSTDIMEncoder(nn.Module):
     self.hidden_size = emb_size
     self.patch_emb_size = n_patches * emb_size
     self.full_img_emb_size = full_img_emb_size
-    self.feature_size = self.output_size
+    self.feature_size = output_size
     self.log = log
 
   def forward(self, inputs, fmaps=False):
