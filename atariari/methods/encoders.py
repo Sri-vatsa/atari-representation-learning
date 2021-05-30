@@ -316,7 +316,7 @@ class LinearSTDIMEncoder(nn.Module):
     self.model = nn.Linear(input_size, output_size)
     self.model.to(self.device)
     self.input_size = input_size
-    self.hidden_size = feature_size
+    self.hidden_size = full_img_emb_size
     self.patch_emb_size = n_patches * feature_size
     self.full_img_emb_size = full_img_emb_size
     self.feature_size = self.output_size
