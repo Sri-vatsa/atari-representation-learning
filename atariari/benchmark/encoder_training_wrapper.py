@@ -2,7 +2,7 @@ import torch
 
 from atari_rl.atariari.methods.global_infonce_stdim import CLIPGlobalInfoNCESpatioTemporalTrainer
 from atari_rl.atariari.methods.global_local_infonce import CLIPGlobalLocalInfoNCESpatioTemporalTrainer, CLIPGlobalLocalInfoNCESpatialTrainer
-from atari_rl.atariari.methods.stdim import CLIPInfoNCESpatioTemporalTrainer
+from atari_rl.atariari.methods.stdim import CLIPInfoNCESpatioTemporalTrainer, CLIPInfoNCESpatioFullTrainer
 from atari_rl.atariari.methods.cpc_clip import CLIPCPCTrainer
 
 def run_encoder_training(encoder, tr_eps, val_eps, config, wandb, method="global-infonce-stdim"):
@@ -17,6 +17,8 @@ def run_encoder_training(encoder, tr_eps, val_eps, config, wandb, method="global
         trainer = CLIPGlobalLocalInfoNCESpatialTrainer(encoder, config, device=device, wandb=wandb)
     elif method == "stdim":
         trainer = CLIPInfoNCESpatioTemporalTrainer(encoder, config, device=device, wandb=wandb)
+    elif method == "sdim":
+        trainer = CLIPInfoNCESpatioFullTrainer(encoder, config, device=device, wandb=wandb)
     else:
         raise Exception("Invalid method...please pick a valid encoder training method")
 
