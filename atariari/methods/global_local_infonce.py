@@ -322,9 +322,9 @@ class CLIPGlobalLocalInfoNCESpatialTrainer(Trainer):
         self.device = device
         if self.use_multiple_predictors:
             # todo remove the hard coded 11x8
-            self.classifiers = [nn.Linear(self.encoder.hidden_size, self.encoder.local_layer_depth).to(device) for _ in range(11*8)]
+            self.classifiers = [nn.Linear(self.encoder.hidden_size, self.encoder.patch_emb_size).to(device) for _ in range(11*8)]
         else:
-            self.classifier1 = nn.Linear(self.encoder.hidden_size, self.encoder.local_layer_depth).to(device)
+            self.classifier1 = nn.Linear(self.encoder.hidden_size, self.encoder.patch_emb_size).to(device)
         self.params = list(self.encoder.parameters())
         if self.use_multiple_predictors:
             for classifier in self.classifiers:
