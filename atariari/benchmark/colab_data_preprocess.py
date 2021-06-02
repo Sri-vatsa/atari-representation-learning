@@ -96,11 +96,10 @@ def get_split_embedding_data(embeddings_dir, input_resolution="full-image", spli
     elif split == "val":
       episodes = torch.load(os.path.join(embeddings_dir, val))
       labels = load_npy(os.path.join(embeddings_dir, "val_labels.npz"))
-
+      
+    return episodes, labels
   except:
     raise Exception("Unable to load embedding data from drive...")
-
-  return episodes, labels
 
 
 def get_split_img_data(data_dir, split="test"):
@@ -114,10 +113,10 @@ def get_split_img_data(data_dir, split="test"):
     elif split == "test":
       episodes = load_npy(os.path.join(images_n_labels_dir, "test_eps.npz"))
       labels =load_npy(os.path.join(images_n_labels_dir, "test_labels.npz"))
+    
+    return episodes, labels
   except:
     print("Unable to load data from drive...")
-  
-  return episodes, labels
 
 
 def get_data_split(data_type, data_dir, input_resolution="full-image", split="test"):
