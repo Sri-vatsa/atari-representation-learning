@@ -185,7 +185,7 @@ def load_encoder_from_checkpoint(path, model_name, cls, input_size=512, output_s
         
         model_path = selected_file[0] if len(selected_file) > 0 else None
         if model_path:
-            encoder = load_checkpoint(model_path, cls, to_train=to_train)
+            encoder = load_checkpoint(model_path, cls, input_size=input_size, output_size=output_size, to_train=to_train)
         
         if not encoder:
             raise Exception("No trained models found...Either train encoder or change directory to load from...")
