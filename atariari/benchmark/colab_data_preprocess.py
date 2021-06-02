@@ -116,6 +116,8 @@ def get_split_img_data(data_dir, split="test"):
       labels =load_npy(os.path.join(images_n_labels_dir, "test_labels.npz"))
   except:
     print("Unable to load data from drive...")
+  
+  return episodes, labels
 
 
 def get_data_split(data_type, data_dir, input_resolution="full-image", split="test"):
