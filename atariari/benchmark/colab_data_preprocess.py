@@ -108,7 +108,7 @@ def get_split_img_data(data_dir, split="test"):
       episodes = load_npy(os.path.join(data_dir, "train_eps.npz"))
       labels = load_npy(os.path.join(data_dir, "train_labels.npz"))
     elif split == "val":
-      episodes = load_npy(os.path.join(data_dir "val_eps.npz"))
+      episodes = load_npy(os.path.join(data_dir, "val_eps.npz"))
       labels = load_npy(os.path.join(data_dir, "val_labels.npz"))
     elif split == "test":
       episodes = load_npy(os.path.join(data_dir, "test_eps.npz"))
