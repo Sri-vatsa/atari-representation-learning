@@ -96,7 +96,7 @@ def get_split_embedding_data(embeddings_dir, input_resolution="full-image", spli
     elif split == "val":
       episodes = torch.load(os.path.join(embeddings_dir, val))
       labels = load_npy(os.path.join(embeddings_dir, "val_labels.npz"))
-      
+
     return episodes, labels
   except:
     raise Exception("Unable to load embedding data from drive...")
@@ -105,14 +105,14 @@ def get_split_embedding_data(embeddings_dir, input_resolution="full-image", spli
 def get_split_img_data(data_dir, split="test"):
   try:
     if split == "train":
-      episodes = load_npy(os.path.join(images_n_labels_dir, "train_eps.npz"))
-      labels = load_npy(os.path.join(images_n_labels_dir, "train_labels.npz"))
+      episodes = load_npy(os.path.join(data_dir, "train_eps.npz"))
+      labels = load_npy(os.path.join(data_dir, "train_labels.npz"))
     elif split == "val":
-      episodes = load_npy(os.path.join(images_n_labels_dir, "val_eps.npz"))
-      labels = load_npy(os.path.join(images_n_labels_dir, "val_labels.npz"))
+      episodes = load_npy(os.path.join(data_dir "val_eps.npz"))
+      labels = load_npy(os.path.join(data_dir, "val_labels.npz"))
     elif split == "test":
-      episodes = load_npy(os.path.join(images_n_labels_dir, "test_eps.npz"))
-      labels =load_npy(os.path.join(images_n_labels_dir, "test_labels.npz"))
+      episodes = load_npy(os.path.join(data_dir, "test_eps.npz"))
+      labels =load_npy(os.path.join(data_dir, "test_labels.npz"))
     
     return episodes, labels
   except:
