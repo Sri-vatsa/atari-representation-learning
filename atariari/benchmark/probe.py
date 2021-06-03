@@ -78,7 +78,7 @@ class LstmProbe(nn.Module):
         out =  self.lstm(feature_vectors)
         return self.linear(out)
 
- class LstmProbe3(nn.Module):
+class LstmProbe3(nn.Module):
     def __init__(self, input_dim, n_layers=6, n_hidden=1024, num_classes=255):
         super().__init__()
         self.lstm = nn.LSTM(input_dim, n_hidden, n_layers, batch_first=True)
