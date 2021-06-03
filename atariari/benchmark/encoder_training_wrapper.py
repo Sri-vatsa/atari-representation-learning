@@ -5,7 +5,7 @@ from atari_rl.atariari.methods.global_local_infonce import CLIPGlobalLocalInfoNC
 from atari_rl.atariari.methods.stdim import CLIPInfoNCESpatioTemporalTrainer, CLIPInfoNCESpatioFullTrainer
 from atari_rl.atariari.methods.cpc_clip import CLIPCPCTrainer
 
-def run_encoder_training(encoder, tr_eps, val_eps, config, wandb, method="global-infonce-stdim"):
+def run_encoder_training(encoder, tr_eps, val_eps, config, wandb, method="global-infonce-stdim", pretrained_encoder=None):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Add different training methods here
@@ -22,7 +22,9 @@ def run_encoder_training(encoder, tr_eps, val_eps, config, wandb, method="global
     else:
         raise Exception("Invalid method...please pick a valid encoder training method")
 
-    # Implement save model
+    if pretrained_encoder:
+        trainer.encoder = pretrained_encoder
+
     trainer.train(tr_eps, val_eps)
 
     return encoder
