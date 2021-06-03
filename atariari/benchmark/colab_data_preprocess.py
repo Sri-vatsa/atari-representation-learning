@@ -32,6 +32,7 @@ def get_episode_data(images_n_labels_dir, env_name, steps, collect_mode, color=T
   return tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels
   
 def get_file_names(input_resolution):
+
   if input_resolution == "full-image":
     return "clip_embeddings_train", "clip_embeddings_val", "clip_embeddings_test"
   elif input_resolution == "2x2patch":
@@ -79,6 +80,57 @@ def get_data(data_type, data_dir, env_name, steps, collect_mode, color=True, inp
     raise Exception("Invalid data type... choose between 'embeddings' & 'images'")
   
   return tr_episodes, val_episodes, tr_labels, val_labels, test_episodes, test_labels
+
+
+def get_split_embedding_data(embeddings_dir, input_resolution="full-image", split="test"):
+
+  tr, val, test = get_file_names(input_resolution)
+
+  try:
+    if split == "test":
+      episodes = torch.load(os.path.join(embeddings_dir, test))
+      labels = load_npy(os.path.join(embeddings_dir, "test_labels.npz"))
+    elif split == "train":
+      episodes = torch.load(os.path.join(embeddings_dir, tr))
+      labels = load_npy(os.path.join(embeddings_dir, "train_labels.npz"))
+    elif split == "val":
+      episodes = torch.load(os.path.join(embeddings_dir, val))
+      labels = load_npy(os.path.join(embeddings_dir, "val_labels.npz"))
+
+    return episodes, labels
+  except:
+    raise Exception("Unable to load embedding data from drive...")
+
+
+def get_split_img_data(data_dir, split="test"):
+  try:
+    if split == "train":
+      episodes = load_npy(os.path.join(data_dir, "train_eps.npz"))
+      labels = load_npy(os.path.join(data_dir, "train_labels.npz"))
+    elif split == "val":
+      episodes = load_npy(os.path.join(data_dir, "val_eps.npz"))
+      labels = load_npy(os.path.join(data_dir, "val_labels.npz"))
+    elif split == "test":
+      episodes = load_npy(os.path.join(data_dir, "test_eps.npz"))
+      labels =load_npy(os.path.join(data_dir, "test_labels.npz"))
+    
+    return episodes, labels
+  except:
+    print("Unable to load data from drive...")
+
+
+def get_data_split(data_type, data_dir, input_resolution="full-image", split="test"):
+  if split not in ["train", "val", "test"]:
+    raise Exception("Invalid split type...choose between 'train', 'val', 'test'")
+  
+  if data_type == "embeddings":
+    episodes, labels = get_split_embedding_data(data_dir, input_resolution=input_resolution, split=split)
+  elif data_type == "images":
+    episodes, labels = get_split_img_data(data_dir, split=split)
+  else:
+    raise Exception("Invalid data type... choose between 'embeddings' & 'images'")
+  
+  return episodes, labels
 
 '''
 def np_to_tensor(tr_eps, val_eps, test_eps):
