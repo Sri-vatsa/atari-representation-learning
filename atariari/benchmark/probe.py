@@ -78,6 +78,16 @@ class LstmProbe(nn.Module):
         out =  self.lstm(feature_vectors)
         return self.linear(out)
 
+class LstmProbe2(nn.Module):
+    def __init__(self, input_dim, n_layers=3, n_hidden=1024, num_classes=255):
+        super().__init__()
+        self.lstm = nn.LSTM(input_dim, n_hidden, n_layers, batch_first=True)
+        self.linear = nn.Linear(n_hidden, num_classes)
+
+    def forward(self, feature_vectors):
+        out =  self.lstm(feature_vectors)
+        return self.linear(out)
+
 
 class FullySupervisedLinearProbe(nn.Module):
     def __init__(self, encoder, num_classes=255):
@@ -154,6 +164,11 @@ class ProbeTrainer():
             self.load_probe_checkpoints(self.save_dir, to_train=True)
         elif self.probe_type=='lstm':
             self.probes = {k: LstmProbe(input_dim=self.feature_size,
+                                          num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
+
+            self.load_probe_checkpoints(self.save_dir, to_train=True)
+        elif self.probe_type=='lstm-2':
+            self.probes = {k: LstmProbe2(input_dim=self.feature_size,
                                           num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
 
             self.load_probe_checkpoints(self.save_dir, to_train=True)
