@@ -171,19 +171,24 @@ class ProbeTrainer():
                                           num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
 
             self.load_probe_checkpoints(self.save_dir, to_train=True)
+            
         elif self.probe_type=='lstm':
             self.probes = {k: LstmProbe(input_dim=self.feature_size,
                                           num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
+            self.load_probe_checkpoints(self.save_dir, to_train=True)
+            
         elif self.probe_type=='lstm-2':
             self.probes = {k: LstmProbe2(input_dim=self.feature_size,
                                           num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
 
             self.load_probe_checkpoints(self.save_dir, to_train=True)
+            
         elif self.probe_type=='lstm-3':
             self.probes = {k: LstmProbe3(input_dim=self.feature_size,
                                           num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}            
 
             self.load_probe_checkpoints(self.save_dir, to_train=True)
+            
         elif self.probe_type=='non-linear-1':
             self.probes = {k: NonLinearProbe1(input_dim=self.feature_size,
                                           num_classes=self.num_classes).to(self.device) for k in sample_label.keys()}
