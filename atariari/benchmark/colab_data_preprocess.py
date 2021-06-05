@@ -47,6 +47,8 @@ def get_file_names(input_resolution):
     return "random_crop_clip_embeddings_train", "random_crop_clip_embeddings_val", "random_crop_clip_embeddings_test"
   elif input_resolution == "image-diff":
     return "clip_embeddings_image_diff_train_new","clip_embeddings_image_diff_val_new", "clip_embeddings_image_diff_test_new"
+  elif input_resolution == "6x6patch":
+    return "clip_embeddings_6x6_patches_train", "clip_embeddings_6x6_patches_val", "clip_embeddings_6x6_patches_test"
   else:
     raise Exception("Invalid input resolution... choose among 'full-image', '2x2patch' & '4x4patch'")
     
