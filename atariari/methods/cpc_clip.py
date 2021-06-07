@@ -111,12 +111,12 @@ class CLIPCPCTrainer(Trainer):
                 disc.eval()
             self.do_one_epoch(e, val_eps)
 
-            if e % save_interval == 0 and e != 0:
-                self.save_checkpoint(self.name, self.encoder, num_epochs=e)
+            #if e % save_interval == 0 and e != 0:
+            #    self.save_checkpoint(self.name, self.encoder, num_epochs=e)
 
             if self.early_stopper.early_stop:
                 break
-        self.save_checkpoint(self.name, self.encoder, num_epochs=None)
+        #self.save_checkpoint(self.name, self.encoder, num_epochs=None)
         return self.encoder
     
     def save_checkpoint(self, name, model, num_epochs=None):
