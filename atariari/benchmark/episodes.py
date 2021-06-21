@@ -188,7 +188,7 @@ def get_episodes(env_name,
                                                    color=color,
                                                    checkpoint_index=checkpoint_index)
 
-    if collect_mode == "random_agent_with_env_outputs":
+    elif collect_mode == "random_agent_with_env_outputs":
         # List of episodes. Each episode is a list of 160x210 observations
         episodes, episode_labels = get_random_agent_rollouts_with_env_outputs(env_name=env_name,
                                                              steps=steps,
