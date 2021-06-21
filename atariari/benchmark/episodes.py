@@ -47,7 +47,6 @@ def get_random_agent_rollouts_with_env_outputs(env_name, steps, seed=42, num_pro
         print(obs)
         print(type(obs))
         print(infos)
-        print(infos['episode'])
         for i, info in enumerate(infos):
             if 'episode' in info.keys():
                 episode_rewards.append(info['episode']['r'])
