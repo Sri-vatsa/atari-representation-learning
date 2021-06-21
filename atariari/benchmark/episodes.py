@@ -44,9 +44,10 @@ def get_random_agent_rollouts_with_env_outputs(env_name, steps, seed=42, num_pro
             np.array([np.random.randint(1, envs.action_space.n) for _ in range(num_processes)])) \
             .unsqueeze(dim=1)
         obs, reward, done, infos = envs.step(action)
-        print("obs " + obs)
-        print("infos " + infos)
-        print("infos epi " + infos['episode'])
+        print(obs)
+        print(type(obs))
+        print(infos)
+        print(infos['episode'])
         for i, info in enumerate(infos):
             if 'episode' in info.keys():
                 episode_rewards.append(info['episode']['r'])
