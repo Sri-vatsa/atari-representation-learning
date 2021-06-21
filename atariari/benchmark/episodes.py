@@ -31,6 +31,42 @@ checkpointed_steps_full_sorted = [1536, 1076736, 2151936, 3227136, 4302336, 5377
                                   45159936, 46235136, 47310336, 48385536, 49460736, 49999872]
 
 
+def get_random_agent_rollouts_with_env_outputs(env_name, steps, seed=42, num_processes=1, num_frame_stack=1, downsample=False, color=False):
+    envs = make_vec_envs(env_name, seed,  num_processes, num_frame_stack, downsample, color)
+    envs.reset();
+    episode_rewards = deque(maxlen=10)
+    print('-------Collecting samples----------')
+    episodes = [[[]] for _ in range(num_processes)]  # (n_processes * n_episodes * episode_len)
+    episode_labels = [[[]] for _ in range(num_processes)]
+    for step in range(steps // num_processes):
+        # Take action using a random policy
+        action = torch.tensor(
+            np.array([np.random.randint(1, envs.action_space.n) for _ in range(num_processes)])) \
+            .unsqueeze(dim=1)
+        obs, reward, done, infos = envs.step(action)
+        print("obs " + obs)
+        print("infos " + infos)
+        print("infos epi " + infos['episode'])
+        for i, info in enumerate(infos):
+            if 'episode' in info.keys():
+                episode_rewards.append(info['episode']['r'])
+
+            if done[i] != 1:
+                episodes[i][-1].append(obs[i].clone())
+                if "labels" in info.keys():
+                    episode_labels[i][-1].append(info["labels"])
+            else:
+                episodes[i].append([obs[i].clone()])
+                if "labels" in info.keys():
+                    episode_labels[i].append([info["labels"]])
+
+    # Convert to 2d list from 3d list
+    episodes = list(chain.from_iterable(episodes))
+    # Convert to 2d list from 3d list
+    episode_labels = list(chain.from_iterable(episode_labels))
+    envs.close()
+    return episodes, episode_labels
+
 def get_random_agent_rollouts(env_name, steps, seed=42, num_processes=1, num_frame_stack=1, downsample=False, color=False):
     envs = make_vec_envs(env_name, seed,  num_processes, num_frame_stack, downsample, color)
     envs.reset();
@@ -151,6 +187,15 @@ def get_episodes(env_name,
                                                    downsample=downsample,
                                                    color=color,
                                                    checkpoint_index=checkpoint_index)
+
+    if collect_mode == "random_agent_with_env_outputs":
+        # List of episodes. Each episode is a list of 160x210 observations
+        episodes, episode_labels = get_random_agent_rollouts_with_env_outputs(env_name=env_name,
+                                                             steps=steps,
+                                                             seed=seed,
+                                                             num_processes=num_processes,
+                                                             num_frame_stack=num_frame_stack,
+                                                             downsample=downsample, color=color)
 
 
     else:
