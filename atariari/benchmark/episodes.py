@@ -38,25 +38,30 @@ def get_random_agent_rollouts_with_env_outputs(env_name, steps, seed=42, num_pro
     print('-------Collecting samples----------')
     episodes = [[[]] for _ in range(num_processes)]  # (n_processes * n_episodes * episode_len)
     episode_labels = [[[]] for _ in range(num_processes)]
+    episode_rew = [[[]] for _ in range(num_processes)]
+    episode_done = [[[]] for _ in range(num_processes)]
     for step in range(steps // num_processes):
         # Take action using a random policy
         action = torch.tensor(
             np.array([np.random.randint(1, envs.action_space.n) for _ in range(num_processes)])) \
             .unsqueeze(dim=1)
         obs, reward, done, infos = envs.step(action)
-        print(obs.shape)
-        print(reward)
-        print(infos)
+
+        print(done)
         for i, info in enumerate(infos):
             if 'episode' in info.keys():
                 episode_rewards.append(info['episode']['r'])
 
             if done[i] != 1:
                 episodes[i][-1].append(obs[i].clone())
+                episode_rew[i][-1].append(reward[i].clone())
+                episode_done[i][-1].append(done[i].clone())
                 if "labels" in info.keys():
                     episode_labels[i][-1].append(info["labels"])
             else:
                 episodes[i].append([obs[i].clone()])
+                episode_rew[i].append([reward[i].clone()])
+                episode_done[i].append([done[i].clone()])
                 if "labels" in info.keys():
                     episode_labels[i].append([info["labels"]])
 
@@ -65,7 +70,7 @@ def get_random_agent_rollouts_with_env_outputs(env_name, steps, seed=42, num_pro
     # Convert to 2d list from 3d list
     episode_labels = list(chain.from_iterable(episode_labels))
     envs.close()
-    return episodes, episode_labels
+    return episodes, episode_labels, episode_rew, episode_done
 
 def get_random_agent_rollouts(env_name, steps, seed=42, num_processes=1, num_frame_stack=1, downsample=False, color=False):
     envs = make_vec_envs(env_name, seed,  num_processes, num_frame_stack, downsample, color)
@@ -190,12 +195,13 @@ def get_episodes(env_name,
 
     elif collect_mode == "random_agent_with_env_outputs":
         # List of episodes. Each episode is a list of 160x210 observations
-        episodes, episode_labels = get_random_agent_rollouts_with_env_outputs(env_name=env_name,
+        episodes, episode_labels, episode_rew, episode_done = get_random_agent_rollouts_with_env_outputs(env_name=env_name,
                                                              steps=steps,
                                                              seed=seed,
                                                              num_processes=num_processes,
                                                              num_frame_stack=num_frame_stack,
                                                              downsample=downsample, color=color)
+        return episodes, episode_labels, episode_rew, episode_done
 
 
     else:
