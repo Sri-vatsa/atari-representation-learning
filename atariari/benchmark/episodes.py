@@ -55,13 +55,13 @@ def get_random_agent_rollouts_with_env_outputs(env_name, steps, seed=42, num_pro
             if done[i] != 1:
                 episodes[i][-1].append(obs[i].clone())
                 episode_rew[i][-1].append(reward[i].clone())
-                episode_done[i][-1].append(done[i].clone())
+                episode_done[i][-1].append(done[i])
                 if "labels" in info.keys():
                     episode_labels[i][-1].append(info["labels"])
             else:
                 episodes[i].append([obs[i].clone()])
                 episode_rew[i].append([reward[i].clone()])
-                episode_done[i].append([done[i].clone()])
+                episode_done[i].append([done[i]])
                 if "labels" in info.keys():
                     episode_labels[i].append([info["labels"]])
 
