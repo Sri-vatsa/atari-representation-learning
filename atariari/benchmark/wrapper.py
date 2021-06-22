@@ -31,8 +31,8 @@ class AtariARIWrapper(InfoWrapper):
 
     def labels(self):
         ram = self.env.unwrapped.ale.getRAM()
-        label_dict = ram2label(self.env_name, ram)
-        return label_dict
+        # label_dict = ram2label(self.env_name, ram)
+        return ram
 
 
 def ram2label(env_name, ram):
