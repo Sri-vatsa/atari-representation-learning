@@ -47,7 +47,6 @@ def get_random_agent_rollouts_with_env_outputs(env_name, steps, seed=42, num_pro
             .unsqueeze(dim=1)
         obs, reward, done, infos = envs.step(action)
 
-        print(done)
         for i, info in enumerate(infos):
             if 'episode' in info.keys():
                 episode_rewards.append(info['episode']['r'])
@@ -69,6 +68,8 @@ def get_random_agent_rollouts_with_env_outputs(env_name, steps, seed=42, num_pro
     episodes = list(chain.from_iterable(episodes))
     # Convert to 2d list from 3d list
     episode_labels = list(chain.from_iterable(episode_labels))
+    episode_rew = list(chain.from_iterable(episode_rew))
+    episode_done = list(chain.from_iterable(episode_done))
     envs.close()
     return episodes, episode_labels, episode_rew, episode_done
 
